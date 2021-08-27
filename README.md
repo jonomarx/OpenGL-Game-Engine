@@ -9,3 +9,5 @@ https://peroxide.dk/papers/collision/collision.pdf - capsule to triangle collisi
 PLANNED SOURCES:
 https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.6.1261&rep=rep1&type=pdf - building an octree, generally stuff also
 https://thunderfist-podium.blogspot.com/2012/02/capsule-capsule-collision-in-games.html - more stuff in general, looking for capsule to capsule collision
+
+i need to type something for the "no wrap" change to work
