@@ -6,9 +6,4 @@ https://learnopengl.com - good place to learn this stuff and provides a lot of t
 https://lwjglgamedev.gitbooks.io/3d-game-development-with-lwjgl/content/ - some scrapped code related to assimp and animation<br>
 https://peroxide.dk/papers/collision/collision.pdf - capsule to triangle collision code + resolution<br><br>
 PLANNED SOURCES:<br>
-https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.6.1261&rep=rep1&type=pdf - building an octree, generally stuff also<br>
-https://thunderfist-podium.blogspot.com/2012/02/capsule-capsule-collision-in-games.html - more stuff in general, looking for capsule to capsule collision<br>
-https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection - maths</br>
-https://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/tribox_tam.pdf - AABB vs triangle mesh<br><br>
-Why so much code so soon? you can't just upload this, wheres the changelog?<br>
-Its in a discord with my friends, i'll upload the seperate changelog with JARs at some point. No source code though.
+umm... scrap that. i'm just gonna do 3D SAT collision with OBBs
