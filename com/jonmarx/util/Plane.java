@@ -47,4 +47,6 @@ public class Plane {
     public Vec3 getNormal() {
         return normal;
     }
-}
+    public Vec3 getOrigin() {
+        return origin;
+}   }

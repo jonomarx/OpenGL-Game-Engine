@@ -245,10 +245,10 @@ public class Renderer {
             }
         } else {
             prepareShadows();
-            lightPos = new Vec3(0f,20f,0f);
+            lightPos = new Vec3(0f,10f,-36f);
             glUseProgram(depthShader.program);
             Mat4 lightProjection = glm.ortho(-10f, 10f, -10f, 10f, 0.1f, 100f);
-            Mat4 lightView = glm.lookAt(lightPos, lightPos.minus(new Vec3(-1f, 0.1f, -1f).normalize()), new Vec3(0f,1f,0f));
+            Mat4 lightView = glm.lookAt(lightPos, lightPos.minus(new Vec3(0f, 1f, -2f).normalize()), new Vec3(0f,1f,0f));
             Mat4 lightSpaceMatrix = lightProjection.times(lightView);
             depthShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
             depthShader.setUniform("view", camera.getView());

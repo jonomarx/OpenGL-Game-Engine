@@ -7,6 +7,10 @@ import com.jonmarx.game.Gun;
 import com.jonmarx.geom.CubeMeshGenerator;
 import com.jonmarx.gfx.GammaPostProcessingShader;
 import com.jonmarx.gfx.KernelPostProcessingShader;
+import com.jonmarx.util.CollisionChecker;
+import com.jonmarx.util.ConvexCollisionBox;
+import com.jonmarx.util.ConvexCollisionQuad;
+import com.jonmarx.util.QuadBoundingBox;
 import com.jonmarx.util.StripGenerator;
 import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
@@ -45,7 +49,7 @@ public class Main {
     
     public static void main(String[] args) {
         Main main = new Main();
-        boolean forceScreenFBO = !false;
+        boolean forceScreenFBO = false;
         if(args.length > 0) {
             if(args[0].equalsIgnoreCase("-forceScreenFBO")) forceScreenFBO = true;
         }
@@ -120,15 +124,20 @@ public class Main {
         Renderer.addModel(MeshLoader.loadMesh("/res/models/amongus.obj", "/res/models/", "Armature|Walk Cycle"));
         Renderer.addModel(MeshLoader.loadMesh("/res/models/bullet.obj", "/res/models"));
         Renderer.addModel(MeshLoader.loadMesh("/res/models/terrainTest.obj", "/res/models"));
-        Renderer.addModel(MeshLoader.loadMesh("/res/models/ramp.obj", "/res/models"));
+        Renderer.addModel(MeshLoader.loadMesh("/res/models/area.obj", "/res/models"));
         
         //Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/dancing_vampire.dae"), "lol"), lightShader);
         Renderer.addEntity(new Gun(90f, 0.1f, new Vec3(0f), Renderer.getModel("/res/models/gun.obj"), "gun"), lightShader);
         Renderer.addEntity(new Crewmate(90, new Vec3(0f,8f,0f), Renderer.getModel("/res/models/amongus.obj"), "amongus"), lightShader);
         //Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/terrainTest.obj"), "terrain"), lightShader);
-        Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/ramp.obj"), "terrain"), lightShader);
+        Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/area.obj"), "terrain"), lightShader);
         Renderer.addEntity(new CameraController("camera-controller"), null);
         game = new Game(Renderer.getEntity("terrain"));
+        
+        QuadBoundingBox box1 = new QuadBoundingBox(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
+        QuadBoundingBox box2 = new QuadBoundingBox(new Vec2(0,0),new Vec2(0,4),new Vec2(2,4),new Vec2(2,0));
+        
+        //System.out.println(box1.testBox(box2) || box2.testBox(box1));
         
         // i literally copied this from stackoverflow lol
         // i literally copied this from c code lol
