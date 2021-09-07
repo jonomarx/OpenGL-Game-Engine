@@ -31,6 +31,7 @@ public class BoundingBox3D {
     }
     
     public boolean testBox(BoundingBox3D other) {
+        outer:
         for(BoundingBoxPlane plane : other.faces) {
             for(BoundingBoxPlane lPlane : faces) {
                 BoundingBox2D b1 = lPlane.project();
@@ -42,10 +43,11 @@ public class BoundingBox3D {
                 System.out.println(Arrays.toString(projectedPoints) + " " + Arrays.toString(lPlane.project().getPoints()));
                 BoundingBox2D b2 = new BoundingBox2D(projectedPoints);
                 
-                if(!(b1.testBox(b2) || b2.testBox(b1))) {
-                    return false;
+                if((b1.testBox(b2) || b2.testBox(b1))) {
+                    continue outer;
                 }
             }
+            return false;
         }
         return true;
     }
