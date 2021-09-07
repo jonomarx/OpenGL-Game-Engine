@@ -3,3 +3,5 @@ dist/
 nbproject/
 store/
 test/
+build.xml
+manifest.mf
