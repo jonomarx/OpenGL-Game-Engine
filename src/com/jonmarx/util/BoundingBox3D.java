@@ -7,7 +7,6 @@ package com.jonmarx.util;
 
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
-import java.util.Arrays;
 
 /**
  * 3D SAT implementation
@@ -31,16 +30,21 @@ public class BoundingBox3D {
     }
     
     public boolean testBox(BoundingBox3D other) {
-    	outer:
-        for(BoundingBoxPlane plane : other.faces) {
-            for(BoundingBoxPlane lPlane : faces) {
+        return testBoxes(this, other) || testBoxes(other, this);
+    }
+    
+    private boolean testBoxes(BoundingBox3D b1, BoundingBox3D b2) {
+        outer:
+        for(BoundingBoxPlane plane : b1.faces) {
+            for(BoundingBoxPlane lPlane : b2.faces) {
             	if(testAgainstOneSide(plane, lPlane)) continue outer;
             }
-            System.out.println("PLANE TEST FAILED.");
             return false;
         }
         return true;
     }
+    
+    //public float sweepBox(BoundingBox3D other)
     
     private boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
     	BoundingBox2D pSide = side.project();
@@ -50,7 +54,6 @@ public class BoundingBox3D {
     	}
     	BoundingBox2D pSide2 = new BoundingBox2D(projectedPoints);
     	
-    	System.out.println(Arrays.toString(pSide.getPoints()) + " " + Arrays.toString(pSide2.getPoints()));
     	return pSide.testBox(pSide2) || pSide2.testBox(pSide);
     }
 }

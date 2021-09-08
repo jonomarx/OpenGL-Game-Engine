@@ -50,18 +50,6 @@ public class BoundingBox2D {
         Vec2 planePoint = p1; // probably doesn't matter
         Vec2 planeNormal = getPerpVector(p2.minus(p1).normalize());
         
-        /* hacked way to do it cuz i can't sort the points without penalty
-        // if at least 1 point is inside - then they are colliding.
-        //edge-length approach
-        float distance = glm.length(p1.minus(p2));
-        for(int i = 0; i < points.length; i++) {
-            Vec2 projectedPoint = b.points[i].minus(planeNormal.times(distanceToEdge(planePoint,planeNormal,b.points[i])));
-            if(glm.length(projectedPoint.minus(p1)) > distance) continue;
-            if(glm.length(projectedPoint.minus(p2)) > distance) continue;
-            return true;
-        }
-        return false;
-        */
         // signed distance approach
         Vec2 lineVector = p1.minus(p2);
         float edge2 = glm.length(lineVector);
@@ -80,6 +68,51 @@ public class BoundingBox2D {
         return false;
     }
     
+    // isMoving means "is this object moving or that object? if true: this one, if false, b is
+    public float sweepBoxAgainstEdge(BoundingBox2D b, Vec2 direction, int edge, boolean isMoving) {
+        if(edge > points.length-1 || edge < 0) return 0;
+        Vec2 p1 = points[edge];
+        Vec2 p2 = points[(edge+1)%points.length];
+        
+        Vec2 planePoint = p1; // probably doesn't matter
+        Vec2 planeNormal = getPerpVector(p2.minus(p1).normalize());
+        
+        // signed distance approach
+        Vec2 lineVector = p1.minus(p2);
+        float edge2 = glm.length(lineVector);
+        
+        Float min = null;
+        Float max = null;
+        
+        for(int i = 0; i < points.length; i++) {
+            Vec2 projectedPoint = b.points[i].minus(planeNormal.times(distanceToEdge(planePoint,planeNormal,b.points[i])));
+            float signedDist = signedDistance(planePoint, lineVector.normalize(), projectedPoint);
+            if(min == null || signedDist < min) min = signedDist;
+            if(max == null || signedDist > max) max = signedDist;
+        }
+        if(min >= 0 && min <= edge2) return 0;
+        if(max >= 0 && max <= edge2) return 0;
+        
+        Vec2 projectedDirection = direction.minus(planeNormal.times(distanceToEdge(planePoint, planeNormal, direction)));
+        float pDirection = signedDistance(planePoint, lineVector.normalize(), projectedDirection);
+        if(pDirection < 0.01f) return 1; // movement is almost 0, it will probably never touch
+        
+        // not colliding, actually have to sweep
+        
+        float distance;
+        if(max < 0) { // box 1 is aligned first on the line
+            distance = 0 - max;
+        } else { // box 2 is aligned first on the line
+            distance = min - edge2;
+        }
+        if(distance < 0.001f) return 0; // close enough to touching
+        
+        float time = distance / pDirection;
+        if(time > 1) time = 1; // round it.
+        if(time < 0) time = 1; // they will never collide
+        return time;
+    }
+    
     public boolean testPointAgainstEdge(Vec2 p0, int edge) {
         if(edge > points.length-1 || edge < 0) return false;
         Vec2 p1 = points[edge];
@@ -89,12 +122,6 @@ public class BoundingBox2D {
         Vec2 planeNormal = getPerpVector(p2.minus(p1).normalize());
         
         Vec2 projectedPoint = p0.minus(planeNormal.times(distanceToEdge(planePoint,planeNormal,p0)));
-        /* edge-length approach
-        float distance = glm.length(p1.minus(p2));
-        if(glm.length(projectedPoint.minus(p1)) > distance) return false;
-        if(glm.length(projectedPoint.minus(p2)) > distance) return false;
-        return true;
-        */
         
         // signed distance approach
         Vec2 lineVector = p1.minus(p2);
