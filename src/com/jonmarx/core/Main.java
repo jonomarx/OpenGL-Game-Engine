@@ -136,7 +136,7 @@ public class Main {
         //BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0),new Vec2(0,4),new Vec2(2,4),new Vec2(2,0));
         //System.out.println(box1.testBox(box2) || box2.testBox(box1));
         BoundingBox3D box1 = generateRectPrism(new Vec3(0,0,0), 5, 5, 5);
-        BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 3, 2);
+        BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 2f, 2);
         System.out.println(box1.testBox(box2) || box2.testBox(box1));
         
         // i literally copied this from stackoverflow lol

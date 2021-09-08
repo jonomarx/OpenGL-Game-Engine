@@ -31,24 +31,26 @@ public class BoundingBox3D {
     }
     
     public boolean testBox(BoundingBox3D other) {
-        outer:
+    	outer:
         for(BoundingBoxPlane plane : other.faces) {
             for(BoundingBoxPlane lPlane : faces) {
-                BoundingBox2D b1 = lPlane.project();
-                
-                Vec2[] projectedPoints = new Vec2[plane.getPoints().length];
-                for(int i = 0; i < projectedPoints.length; i++) {
-                    projectedPoints[i] = lPlane.projectPoint(plane.getPoints()[i]);
-                }
-                System.out.println(Arrays.toString(projectedPoints) + " " + Arrays.toString(lPlane.project().getPoints()));
-                BoundingBox2D b2 = new BoundingBox2D(projectedPoints);
-                
-                if((b1.testBox(b2) || b2.testBox(b1))) {
-                    continue outer;
-                }
+            	if(testAgainstOneSide(plane, lPlane)) continue outer;
             }
+            System.out.println("PLANE TEST FAILED.");
             return false;
         }
         return true;
+    }
+    
+    private boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
+    	BoundingBox2D pSide = side.project();
+    	Vec2[] projectedPoints = new Vec2[side2.getPoints().length];
+    	for(int i = 0; i < side2.getPoints().length; i++) {
+    		projectedPoints[i] = side.projectPoint(side2.getPoints()[i]);
+    	}
+    	BoundingBox2D pSide2 = new BoundingBox2D(projectedPoints);
+    	
+    	System.out.println(Arrays.toString(pSide.getPoints()) + " " + Arrays.toString(pSide2.getPoints()));
+    	return pSide.testBox(pSide2) || pSide2.testBox(pSide);
     }
 }
