@@ -33,7 +33,7 @@ public class BoundingBox3D {
         return testBoxes(this, other) || testBoxes(other, this);
     }
     
-    private boolean testBoxes(BoundingBox3D b1, BoundingBox3D b2) {
+    private static boolean testBoxes(BoundingBox3D b1, BoundingBox3D b2) {
         outer:
         for(BoundingBoxPlane plane : b1.faces) {
             for(BoundingBoxPlane lPlane : b2.faces) {
@@ -44,9 +44,25 @@ public class BoundingBox3D {
         return true;
     }
     
-    //public float sweepBox(BoundingBox3D other)
+    public float sweepBoxes(BoundingBox3D b1, BoundingBox3D b2) {
+    	Float lowest = null;
+        for(BoundingBoxPlane plane : b1.faces) {
+            for(BoundingBoxPlane lPlane : b2.faces) {
+            	float dist = sweepAgainstOneSide(plane, lPlane);
+            	if(lowest == null || dist < lowest) {
+            		lowest = dist;
+            	}
+            }
+        }
+        //return dist;
+        return 0;
+    }
     
-    private boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
+    private static float sweepAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
+    	return 1;
+    }
+    
+    private static boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
     	BoundingBox2D pSide = side.project();
     	Vec2[] projectedPoints = new Vec2[side2.getPoints().length];
     	for(int i = 0; i < side2.getPoints().length; i++) {

@@ -132,12 +132,12 @@ public class Main {
         Renderer.addEntity(new CameraController("camera-controller"), null);
         game = new Game(Renderer.getEntity("terrain"));
         
-        //BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
-        //BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0),new Vec2(0,4),new Vec2(2,4),new Vec2(2,0));
+        BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
+        BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0-6),new Vec2(0,4-6),new Vec2(2,4-6),new Vec2(2,0-6));
+        System.out.println(box1.sweepBox(box2, new Vec2(0,-1)));
+        //BoundingBox3D box1 = generateRectPrism(new Vec3(0,0,0), 5, 5, 5);
+        //BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 2f, 2);
         //System.out.println(box1.testBox(box2) || box2.testBox(box1));
-        BoundingBox3D box1 = generateRectPrism(new Vec3(0,0,0), 5, 5, 5);
-        BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 2f, 2);
-        System.out.println(box1.testBox(box2) || box2.testBox(box1));
         
         // i literally copied this from stackoverflow lol
         // i literally copied this from c code lol
