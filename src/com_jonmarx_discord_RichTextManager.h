@@ -13,15 +13,15 @@ extern "C" {
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_init
-  (JNIEnv *, jclass);
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_jonmarx_discord_RichTextManager
  * Method:    pushRichText
- * Signature: (Lcom/jonmarx/discord/RichTextManager/RichTextWrapper;)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_pushRichText
-  (JNIEnv *, jclass, jobject);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     com_jonmarx_discord_RichTextManager
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_pushRichText
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_tick
-  (JNIEnv *, jclass);
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }
