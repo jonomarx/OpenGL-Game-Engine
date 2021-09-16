@@ -16,8 +16,14 @@ import sun.misc.Unsafe;
  */
 public class RichTextManager {
     private Unsafe unsafe;
+    private RichTextManager instance;
     
-    public RichTextManager() {
+    public RichTextManager get() {
+        if(instance == null) instance = new RichTextManager();
+        return instance;
+    }
+    
+    private RichTextManager() {
         init();
         try {
             Field f = Unsafe.class.getDeclaredField("theUnsafe");
