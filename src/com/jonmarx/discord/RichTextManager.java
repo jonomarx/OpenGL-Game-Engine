@@ -16,9 +16,13 @@ import sun.misc.Unsafe;
  */
 public class RichTextManager {
     private Unsafe unsafe;
-    private RichTextManager instance;
+    private static RichTextManager instance;
     
-    public RichTextManager get() {
+    static {
+        System.loadLibrary("libDiscordJavaIntEx");
+    }
+    
+    public static RichTextManager get() {
         if(instance == null) instance = new RichTextManager();
         return instance;
     }
@@ -74,15 +78,7 @@ public class RichTextManager {
         return pointer;
     }
     
-    private native void init();
+    public native void init();
     public native void pushRichText(long pointer);
     public native void tick();
-}
-
-class RichTextObject {
-    public String state;
-    public String details;
-    public String type;
-    public String name;
-    public String instance;
 }

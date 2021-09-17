@@ -1,5 +1,7 @@
 package com.jonmarx.core;
 
+import com.jonmarx.discord.RichTextManager;
+import com.jonmarx.discord.RichTextObject;
 import com.jonmarx.game.CameraController;
 import com.jonmarx.game.Crewmate;
 import com.jonmarx.game.Game;
@@ -48,6 +50,15 @@ public class Main {
     private Game game;
     
     public static void main(String[] args) {
+        RichTextManager text = RichTextManager.get();
+        text.init();
+        RichTextObject obj = new RichTextObject();
+        obj.details = "details";
+        obj.name = "name";
+        obj.state = "state";
+        obj.type = "type";
+        text.updateRichText(obj);
+        
         Main main = new Main();
         boolean forceScreenFBO = false;
         if(args.length > 0) {
@@ -188,6 +199,8 @@ public class Main {
     int tick = 0;
     
     public void update() {
+        RichTextManager text = RichTextManager.get();
+        text.tick();
         glfwPollEvents();
         tick++;
         

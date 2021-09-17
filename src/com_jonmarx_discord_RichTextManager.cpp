@@ -1,7 +1,6 @@
-#include <jni.h>
+#include <com_jonmarx_discord_RichTextManager.h>
 #include <discord.h>
 #include <iostream>
-#include <com_jonmarx_discord_RichTextManager.h>
 
 struct thingy {
     char * state;
