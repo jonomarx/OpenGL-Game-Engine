@@ -19,7 +19,10 @@ public class RichTextManager {
     private static RichTextManager instance;
     
     static {
+        System.loadLibrary("discord_game_sdk");
+        System.out.println("Discord loaded!");
         System.loadLibrary("libDiscordJavaIntEx");
+        System.out.println("Wrapper Loaded!");
     }
     
     public static RichTextManager get() {
@@ -29,6 +32,7 @@ public class RichTextManager {
     
     private RichTextManager() {
         init();
+        System.out.println("Inited JNI");
         try {
             Field f = Unsafe.class.getDeclaredField("theUnsafe");
             f.setAccessible(true);
@@ -78,7 +82,7 @@ public class RichTextManager {
         return pointer;
     }
     
-    public native void init();
+    private native void init();
     public native void pushRichText(long pointer);
     public native void tick();
 }

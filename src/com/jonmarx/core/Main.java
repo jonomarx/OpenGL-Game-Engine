@@ -51,13 +51,13 @@ public class Main {
     
     public static void main(String[] args) {
         RichTextManager text = RichTextManager.get();
-        text.init();
         RichTextObject obj = new RichTextObject();
         obj.details = "details";
         obj.name = "name";
         obj.state = "state";
         obj.type = "type";
         text.updateRichText(obj);
+        System.out.println("Attempted to update rich text.");
         
         Main main = new Main();
         boolean forceScreenFBO = false;
