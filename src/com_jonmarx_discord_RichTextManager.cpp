@@ -59,7 +59,6 @@ JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_pushRichText(JNI
             break;
     }
     
-    
     core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
         
     });
