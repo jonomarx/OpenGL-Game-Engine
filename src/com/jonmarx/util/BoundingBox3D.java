@@ -7,7 +7,6 @@ package com.jonmarx.util;
 
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
-import java.util.Arrays;
 
 /**
  * 3D SAT implementation
@@ -31,18 +30,39 @@ public class BoundingBox3D {
     }
     
     public boolean testBox(BoundingBox3D other) {
-    	outer:
-        for(BoundingBoxPlane plane : other.faces) {
-            for(BoundingBoxPlane lPlane : faces) {
+        return testBoxes(this, other) || testBoxes(other, this);
+    }
+    
+    private static boolean testBoxes(BoundingBox3D b1, BoundingBox3D b2) {
+        outer:
+        for(BoundingBoxPlane plane : b1.faces) {
+            for(BoundingBoxPlane lPlane : b2.faces) {
             	if(testAgainstOneSide(plane, lPlane)) continue outer;
             }
-            System.out.println("PLANE TEST FAILED.");
             return false;
         }
         return true;
     }
     
-    private boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
+    public float sweepBoxes(BoundingBox3D b1, BoundingBox3D b2) {
+    	Float lowest = null;
+        for(BoundingBoxPlane plane : b1.faces) {
+            for(BoundingBoxPlane lPlane : b2.faces) {
+            	float dist = sweepAgainstOneSide(plane, lPlane);
+            	if(lowest == null || dist < lowest) {
+            		lowest = dist;
+            	}
+            }
+        }
+        //return dist;
+        return 0;
+    }
+    
+    private static float sweepAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
+    	return 1;
+    }
+    
+    private static boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
     	BoundingBox2D pSide = side.project();
     	Vec2[] projectedPoints = new Vec2[side2.getPoints().length];
     	for(int i = 0; i < side2.getPoints().length; i++) {
@@ -50,7 +70,6 @@ public class BoundingBox3D {
     	}
     	BoundingBox2D pSide2 = new BoundingBox2D(projectedPoints);
     	
-    	System.out.println(Arrays.toString(pSide.getPoints()) + " " + Arrays.toString(pSide2.getPoints()));
     	return pSide.testBox(pSide2) || pSide2.testBox(pSide);
     }
 }
