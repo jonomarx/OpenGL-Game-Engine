@@ -47,8 +47,8 @@ public class RichTextManager {
         long addressSize = unsafe.addressSize();
         
         if(unsafe == null) return;
-        // 4 strings in the thing
-        long pointers = unsafe.allocateMemory(addressSize * 4);
+        // 5 strings in the thing
+        long pointers = unsafe.allocateMemory(addressSize * 5);
         
         long ptrcpy = pointers;
         long state = generateCharArray(text.state);
@@ -66,8 +66,21 @@ public class RichTextManager {
         long name = generateCharArray(text.details);
         unsafe.putAddress(ptrcpy, name);
         
+        ptrcpy += addressSize;
+        long instance = generateCharArray(text.instance);
+        unsafe.putAddress(ptrcpy, instance);
+        
         // c++ code will clean up the memory
         pushRichText(pointers);
+        // no it wont?
+        
+        unsafe.freeMemory(state);
+        unsafe.freeMemory(details);
+        unsafe.freeMemory(type);
+        unsafe.freeMemory(name);
+        unsafe.freeMemory(instance);
+        
+        unsafe.freeMemory(pointers);
     }
     
     private long generateCharArray(String string) {

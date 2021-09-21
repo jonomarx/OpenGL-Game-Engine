@@ -19,6 +19,8 @@ import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -52,10 +54,11 @@ public class Main {
     public static void main(String[] args) {
         RichTextManager text = RichTextManager.get();
         RichTextObject obj = new RichTextObject();
-        obj.details = "details";
-        obj.name = "name";
-        obj.state = "state";
+        obj.details = "<None>";
+        obj.name = "Game Thing";
+        obj.state = "Startup State";
         obj.type = "type";
+        obj.instance = "f";
         text.updateRichText(obj);
         System.out.println("Attempted to update rich text.");
         
@@ -186,6 +189,13 @@ public class Main {
     }
     
     public void render() {
+        if(suspend) {
+            try {
+                Thread.sleep(16);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         Renderer.renderFromList();
         glfwSwapBuffers(window);
     }
@@ -217,6 +227,17 @@ public class Main {
             }
         } else {
             p = false;
+        }
+        
+        if(tick % 900 == 0) {
+            RichTextObject obj = new RichTextObject();
+            Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
+            obj.details = "Position: " + entity.getPos();
+            obj.name = "Jonathan's Game Thing";
+            obj.state = suspend ? "Paused" : "Running";
+            obj.type = "p";
+            obj.instance = "f";
+            text.updateRichText(obj);
         }
         
         if(suspend) return;
