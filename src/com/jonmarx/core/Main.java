@@ -1,5 +1,6 @@
 package com.jonmarx.core;
 
+import com.jonmarx.discord.DiscordPlugin;
 import com.jonmarx.discord.RichTextManager;
 import com.jonmarx.discord.RichTextObject;
 import com.jonmarx.game.CameraController;
@@ -9,6 +10,7 @@ import com.jonmarx.game.Gun;
 import com.jonmarx.geom.CubeMeshGenerator;
 import com.jonmarx.gfx.GammaPostProcessingShader;
 import com.jonmarx.gfx.KernelPostProcessingShader;
+import com.jonmarx.plugin.Plugin;
 import com.jonmarx.util.CollisionChecker;
 import com.jonmarx.util.BoundingBox2D;
 import com.jonmarx.util.BoundingBox3D;
@@ -54,18 +56,9 @@ public class Main {
     
     private Game game;
     
+    private Plugin[] plugins = new Plugin[] {new DiscordPlugin()};
+    
     public static void main(String[] args) {
-        /*RichTextManager text = RichTextManager.get();
-        RichTextObject obj = new RichTextObject();
-        obj.details = "<None>";
-        obj.name = "Game Thing";
-        obj.state = "Startup State";
-        obj.type = "type";
-        obj.instance = "f";
-        text.updateRichText(obj);
-        */
-        System.out.println("Attempted to update rich text.");
-        
         Main main = new Main();
         boolean forceScreenFBO = false;
         if(args.length > 0) {
@@ -150,6 +143,10 @@ public class Main {
         Renderer.addEntity(new CameraController("camera-controller"), null);
         game = new Game(Renderer.getEntity("terrain"));
         
+        for(Plugin plugin : plugins) {
+            plugin.init();
+        }
+        
         BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
         BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0-6),new Vec2(0,4-6),new Vec2(2,4-6),new Vec2(2,0-6));
         System.out.println(box1.sweepBox(box2, new Vec2(0,-1)));
@@ -211,8 +208,6 @@ public class Main {
     int tick = 0;
     
     public void update() {
-        /*RichTextManager text = RichTextManager.get();
-        text.tick();*/
         glfwPollEvents();
         tick++;
         
@@ -231,17 +226,6 @@ public class Main {
             p = false;
         }
         
-        /*if(tick % 900 == 0) {
-            RichTextObject obj = new RichTextObject();
-            Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
-            obj.details = "Position: " + entity.getPos();
-            obj.name = "Jonathan's Game Thing";
-            obj.state = suspend ? "Paused" : "Running";
-            obj.type = "p";
-            obj.instance = "f";
-            text.updateRichText(obj);
-        }*/
-        
         if(suspend) return;
         
         double[] x = new double[1];
@@ -258,7 +242,9 @@ public class Main {
         //Renderer.getEntity("lol").getModel().getAnimator().updateAnimation(1f/60f);
         Renderer.update();
         
-        //Buffer buffer = ByteBuffer.wrap(new byte[0]).get;
+        for(Plugin plugin : plugins) {
+            plugin.update();
+        }
     }
     
     public void cleanup() {
