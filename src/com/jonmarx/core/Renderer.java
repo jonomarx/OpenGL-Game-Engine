@@ -176,7 +176,7 @@ public class Renderer {
         glEnableVertexAttribArray(4);
         
         shader.setUniform("model", modelMat);
-	glDrawElements(GL_TRIANGLES, model.indicies.length, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, model.indicies.length, GL_UNSIGNED_INT, 0);
         
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -184,7 +184,7 @@ public class Renderer {
         glDisableVertexAttribArray(3);
         glDisableVertexAttribArray(4);
         
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         
         glUseProgram(0);
@@ -373,6 +373,14 @@ public class Renderer {
     }
     
     /**
+     * Gets the full list of entities
+     * @return
+     */
+    public static Entity[] getEntities() {
+        return entityList.toArray(new Entity[0]);
+    }
+    
+    /**
      * Gets an shader from the render list using an Entity ID
      * @param id
      * @return 
@@ -487,7 +495,7 @@ public class Renderer {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glUseProgram(0);
         glBindVertexArray(0);

@@ -46,18 +46,18 @@ public class BoundingBox2D {
     // 0.9999999 when facing away lmaoooo
     // rounding error
     public float sweepBox(BoundingBox2D b, Vec2 direction) {
-    	Float min = null;
-    	for(int i = 0; i < points.length; i++) {
-    		float dist = this.sweepBoxAgainstEdge(b, direction, i);
-    		if(min == null || dist < min) min = dist;
-    		System.out.println("dist: " + dist);
-    	}
-    	for(int i = 0; i < b.points.length; i++) {
-    		float dist = b.sweepBoxAgainstEdge(this, direction.times(-1f), i);
-    		if(min == null || dist < min) min = dist;
-    		System.out.println("dist: " + dist);
-    	}
-    	return min;
+        Float min = null;
+        for(int i = 0; i < points.length; i++) {
+            float dist = this.sweepBoxAgainstEdge(b, direction, i);
+            if(min == null || dist < min) min = dist;
+            System.out.println("dist: " + dist);
+        }
+        for(int i = 0; i < b.points.length; i++) {
+            float dist = b.sweepBoxAgainstEdge(this, direction.times(-1f), i);
+            if(min == null || dist < min) min = dist;
+            System.out.println("dist: " + dist);
+        }
+        return min;
     }
     
     public boolean testBoxAgainstEdge(BoundingBox2D b, int edge) {
@@ -120,7 +120,7 @@ public class BoundingBox2D {
         
 
         if(glm.abs(pDirection) < 0.01f) {
-        	return 1; // movement is almost 0, it will probably never touch
+            return 1; // movement is almost 0, it will probably never touch
         }
         
         // not colliding, actually have to sweep
@@ -142,18 +142,18 @@ public class BoundingBox2D {
         float time = distance / pDirection;
         System.out.println(time);
         if(time > 1f) {
-        	time = 1; // round it.
-        	System.out.println("1!");
+            time = 1; // round it.
+            System.out.println("1!");
         }
         if(time < 0f) {
-        	time = 1; // they will never collide
-        	System.out.println("<0 means 1!");
+            time = 1; // they will never collide
+            System.out.println("<0 means 1!");
         }
         return time;
     }
     
     private float projectPoint(Vec2 planeOrigin, Vec2 planeNormal, Vec2 lineVector, Vec2 point) {
-    	Vec2 projectedPoint = point.minus(planeNormal.times(distanceToEdge(planeOrigin, planeNormal, point)));
+        Vec2 projectedPoint = point.minus(planeNormal.times(distanceToEdge(planeOrigin, planeNormal, point)));
         float pPoint = signedDistance(planeOrigin, lineVector.normalize(), projectedPoint);
         return pPoint;
     }

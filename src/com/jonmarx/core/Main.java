@@ -17,8 +17,11 @@ import com.jonmarx.util.StripGenerator;
 import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
+
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.lwjgl.glfw.GLFW.*;
@@ -52,7 +55,7 @@ public class Main {
     private Game game;
     
     public static void main(String[] args) {
-        RichTextManager text = RichTextManager.get();
+        /*RichTextManager text = RichTextManager.get();
         RichTextObject obj = new RichTextObject();
         obj.details = "<None>";
         obj.name = "Game Thing";
@@ -60,6 +63,7 @@ public class Main {
         obj.type = "type";
         obj.instance = "f";
         text.updateRichText(obj);
+        */
         System.out.println("Attempted to update rich text.");
         
         Main main = new Main();
@@ -204,13 +208,11 @@ public class Main {
     double prevY = 480/2;
     double rotation = 0;
     
-    boolean shooting = false;
-    
     int tick = 0;
     
     public void update() {
-        RichTextManager text = RichTextManager.get();
-        text.tick();
+        /*RichTextManager text = RichTextManager.get();
+        text.tick();*/
         glfwPollEvents();
         tick++;
         
@@ -229,7 +231,7 @@ public class Main {
             p = false;
         }
         
-        if(tick % 900 == 0) {
+        /*if(tick % 900 == 0) {
             RichTextObject obj = new RichTextObject();
             Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
             obj.details = "Position: " + entity.getPos();
@@ -238,7 +240,7 @@ public class Main {
             obj.type = "p";
             obj.instance = "f";
             text.updateRichText(obj);
-        }
+        }*/
         
         if(suspend) return;
         
@@ -253,12 +255,10 @@ public class Main {
         
         rotation += 1;
         
-        if(glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
-            shooting = true;
-        }
-        
         //Renderer.getEntity("lol").getModel().getAnimator().updateAnimation(1f/60f);
         Renderer.update();
+        
+        //Buffer buffer = ByteBuffer.wrap(new byte[0]).get;
     }
     
     public void cleanup() {

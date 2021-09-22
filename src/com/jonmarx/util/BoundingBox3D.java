@@ -37,7 +37,7 @@ public class BoundingBox3D {
         outer:
         for(BoundingBoxPlane plane : b1.faces) {
             for(BoundingBoxPlane lPlane : b2.faces) {
-            	if(testAgainstOneSide(plane, lPlane)) continue outer;
+                if(testAgainstOneSide(plane, lPlane)) continue outer;
             }
             return false;
         }
@@ -45,13 +45,13 @@ public class BoundingBox3D {
     }
     
     public float sweepBoxes(BoundingBox3D b1, BoundingBox3D b2) {
-    	Float lowest = null;
+        Float lowest = null;
         for(BoundingBoxPlane plane : b1.faces) {
             for(BoundingBoxPlane lPlane : b2.faces) {
-            	float dist = sweepAgainstOneSide(plane, lPlane);
-            	if(lowest == null || dist < lowest) {
-            		lowest = dist;
-            	}
+                float dist = sweepAgainstOneSide(plane, lPlane);
+                if(lowest == null || dist < lowest) {
+                    lowest = dist;
+                }
             }
         }
         //return dist;
@@ -59,17 +59,17 @@ public class BoundingBox3D {
     }
     
     private static float sweepAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
-    	return 1;
+        return 1;
     }
     
     private static boolean testAgainstOneSide(BoundingBoxPlane side, BoundingBoxPlane side2) {
-    	BoundingBox2D pSide = side.project();
-    	Vec2[] projectedPoints = new Vec2[side2.getPoints().length];
-    	for(int i = 0; i < side2.getPoints().length; i++) {
-    		projectedPoints[i] = side.projectPoint(side2.getPoints()[i]);
-    	}
-    	BoundingBox2D pSide2 = new BoundingBox2D(projectedPoints);
-    	
-    	return pSide.testBox(pSide2) || pSide2.testBox(pSide);
+        BoundingBox2D pSide = side.project();
+        Vec2[] projectedPoints = new Vec2[side2.getPoints().length];
+        for(int i = 0; i < side2.getPoints().length; i++) {
+            projectedPoints[i] = side.projectPoint(side2.getPoints()[i]);
+        }
+        BoundingBox2D pSide2 = new BoundingBox2D(projectedPoints);
+        
+        return pSide.testBox(pSide2) || pSide2.testBox(pSide);
     }
 }
