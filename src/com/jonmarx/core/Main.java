@@ -1,29 +1,18 @@
 package com.jonmarx.core;
 
-import com.jonmarx.discord.DiscordPlugin;
-import com.jonmarx.discord.RichTextManager;
-import com.jonmarx.discord.RichTextObject;
 import com.jonmarx.game.CameraController;
 import com.jonmarx.game.Crewmate;
-import com.jonmarx.game.Game;
+import com.jonmarx.game.GameState;
 import com.jonmarx.game.Gun;
-import com.jonmarx.geom.CubeMeshGenerator;
 import com.jonmarx.gfx.GammaPostProcessingShader;
-import com.jonmarx.gfx.KernelPostProcessingShader;
 import com.jonmarx.plugin.Plugin;
-import com.jonmarx.util.CollisionChecker;
 import com.jonmarx.util.BoundingBox2D;
 import com.jonmarx.util.BoundingBox3D;
 import com.jonmarx.util.BoundingBoxPlane;
-import com.jonmarx.util.StripGenerator;
 import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
 
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.lwjgl.glfw.GLFW.*;
@@ -54,9 +43,9 @@ public class Main {
     private int x = 640;
     private int y = 480;
     
-    private Game game;
+    private static State state;
     
-    private Plugin[] plugins = new Plugin[] {new DiscordPlugin()};
+    private Plugin[] plugins = new Plugin[] {/*new DiscordPlugin()*/};
     
     public static void main(String[] args) {
         Main main = new Main();
@@ -128,21 +117,13 @@ public class Main {
         }
         loadShaders();
         
-        //Renderer.addModel(MeshLoader.loadMesh("/res/models/dancing_vampire.dae", "/res/models/"));
-        Renderer.addModel(MeshLoader.loadMesh("/res/models/gun.obj", "/res/models/"));
-        Renderer.addModel(MeshLoader.loadMesh("/res/models/amongus.obj", "/res/models/", "Armature|Walk Cycle"));
-        Renderer.addModel(MeshLoader.loadMesh("/res/models/bullet.obj", "/res/models"));
-        Renderer.addModel(MeshLoader.loadMesh("/res/models/terrainTest.obj", "/res/models"));
-        Renderer.addModel(MeshLoader.loadMesh("/res/models/area.obj", "/res/models"));
+        MemoryCache.registerModel("gun", "/res/models/gun.obj");
+        MemoryCache.registerModel("amongus", "/res/models/amongus.obj", "Armature|Walk Cycle"); // lmao
+        MemoryCache.registerModel("bullet", "/res/models/bullet.obj");
+        MemoryCache.registerModel("terrain", "/res/models/terrainTest.obj");
+        MemoryCache.registerModel("terrain", "/res/models/area.obj");
         
-        //Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/dancing_vampire.dae"), "lol"), lightShader);
-        Renderer.addEntity(new Gun(90f, 0.1f, new Vec3(0f), Renderer.getModel("/res/models/gun.obj"), "gun"), lightShader);
-        Renderer.addEntity(new Crewmate(90, new Vec3(0f,8f,0f), Renderer.getModel("/res/models/amongus.obj"), "amongus"), lightShader);
-        //Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/terrainTest.obj"), "terrain"), lightShader);
-        Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/area.obj"), "terrain"), lightShader);
-        Renderer.addEntity(new CameraController("camera-controller"), null);
-        game = new Game(Renderer.getEntity("terrain"));
-        
+        state = new GameState();
         for(Plugin plugin : plugins) {
             plugin.init();
         }
@@ -197,13 +178,12 @@ public class Main {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        Renderer.renderFromList();
+        state.render();
         glfwSwapBuffers(window);
     }
     
     double prevX = 640/2;
     double prevY = 480/2;
-    double rotation = 0;
     
     int tick = 0;
     
@@ -237,11 +217,7 @@ public class Main {
         
         glfwSetCursorPos(window, 640/2, 480/2);
         
-        rotation += 1;
-        
-        //Renderer.getEntity("lol").getModel().getAnimator().updateAnimation(1f/60f);
-        Renderer.update();
-        
+        state.update();
         for(Plugin plugin : plugins) {
             plugin.update();
         }
@@ -286,11 +262,15 @@ public class Main {
         return glfwGetMouseButton(window, button);
     }
     
-    public Game getGame() {
-        return game;
-    }
-    
     public static Main getInstance() {
         return instance;
+    }
+    
+    public static State getState() {
+        return state;
+    }
+    
+    public static void setState(State statee) {
+        state = statee;
     }
 }
