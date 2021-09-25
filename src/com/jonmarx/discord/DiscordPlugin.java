@@ -35,8 +35,8 @@ public class DiscordPlugin extends Plugin {
         
         if(tick % 900 == 0) {
             RichTextObject obj = new RichTextObject();
-            Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
-            obj.details = "Position: " + entity.getPos();
+            //Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
+            obj.details = "Position: " + /*entity.getPos()*/ "N/A";
             obj.name = "Game Thing";
             obj.state = "In The Game";
             obj.type = "p";

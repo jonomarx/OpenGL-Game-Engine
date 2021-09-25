@@ -81,7 +81,7 @@ public class Model {
         AIString pathh = AIString.calloc();
         aiGetMaterialTexture(material, aiTextureType_DIFFUSE, 0, pathh, (IntBuffer)null, null, null, null, null, null);
         if(pathh.dataString().length() > 0) {
-            textures.add(new Texture(path + pathh.dataString()));
+            textures.add(new Texture(path + pathh.dataString().replaceAll("\\\\", "")));
         } else {
             AIColor4D color = AIColor4D.create();
             aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);

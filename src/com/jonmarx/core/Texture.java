@@ -42,7 +42,8 @@ public class Texture {
         try {
             image = ImageIO.read(Texture.class.getResourceAsStream(tex));
         } catch (Exception ex) {
-            //Logger.getLogger(Texture.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Texture.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("looked at: " + tex);
         }
         if(image == null) {
             try {

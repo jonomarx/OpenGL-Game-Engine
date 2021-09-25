@@ -2,6 +2,7 @@ package com.jonmarx.core;
 
 import com.jonmarx.game.CameraController;
 import com.jonmarx.game.Crewmate;
+import com.jonmarx.discord.DiscordPlugin;
 import com.jonmarx.game.GameState;
 import com.jonmarx.game.Gun;
 import com.jonmarx.gfx.GammaPostProcessingShader;
@@ -44,7 +45,7 @@ public class Main {
     
     private static State state;
     
-    private Plugin[] plugins = new Plugin[] {/*new DiscordPlugin()*/};
+    private Plugin[] plugins = new Plugin[] {new DiscordPlugin()};
     
     public static void main(String[] args) {
         Main main = new Main();
