@@ -16,23 +16,15 @@ import sun.misc.Unsafe;
  */
 public class RichTextManager {
     private Unsafe unsafe;
-    private static RichTextManager instance;
+    private RichTextManager instance;
     
-    static {
-        System.loadLibrary("discord_game_sdk");
-        System.out.println("Discord loaded!");
-        System.loadLibrary("libDiscordJavaIntEx");
-        System.out.println("Wrapper Loaded!");
-    }
-    
-    public static RichTextManager get() {
+    public RichTextManager get() {
         if(instance == null) instance = new RichTextManager();
         return instance;
     }
     
     private RichTextManager() {
         init();
-        System.out.println("Inited JNI");
         try {
             Field f = Unsafe.class.getDeclaredField("theUnsafe");
             f.setAccessible(true);
@@ -47,8 +39,8 @@ public class RichTextManager {
         long addressSize = unsafe.addressSize();
         
         if(unsafe == null) return;
-        // 5 strings in the thing
-        long pointers = unsafe.allocateMemory(addressSize * 5);
+        // 4 strings in the thing
+        long pointers = unsafe.allocateMemory(addressSize * 4);
         
         long ptrcpy = pointers;
         long state = generateCharArray(text.state);
@@ -66,21 +58,8 @@ public class RichTextManager {
         long name = generateCharArray(text.details);
         unsafe.putAddress(ptrcpy, name);
         
-        ptrcpy += addressSize;
-        long instance = generateCharArray(text.instance);
-        unsafe.putAddress(ptrcpy, instance);
-        
         // c++ code will clean up the memory
         pushRichText(pointers);
-        // no it wont?
-        
-        unsafe.freeMemory(state);
-        unsafe.freeMemory(details);
-        unsafe.freeMemory(type);
-        unsafe.freeMemory(name);
-        unsafe.freeMemory(instance);
-        
-        unsafe.freeMemory(pointers);
     }
     
     private long generateCharArray(String string) {
@@ -98,4 +77,12 @@ public class RichTextManager {
     private native void init();
     public native void pushRichText(long pointer);
     public native void tick();
+}
+
+class RichTextObject {
+    public String state;
+    public String details;
+    public String type;
+    public String name;
+    public String instance;
 }

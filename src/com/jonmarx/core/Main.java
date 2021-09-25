@@ -2,19 +2,21 @@ package com.jonmarx.core;
 
 import com.jonmarx.game.CameraController;
 import com.jonmarx.game.Crewmate;
-import com.jonmarx.game.GameState;
+import com.jonmarx.game.Game;
 import com.jonmarx.game.Gun;
+import com.jonmarx.geom.CubeMeshGenerator;
 import com.jonmarx.gfx.GammaPostProcessingShader;
-import com.jonmarx.plugin.Plugin;
+import com.jonmarx.gfx.KernelPostProcessingShader;
+import com.jonmarx.util.CollisionChecker;
 import com.jonmarx.util.BoundingBox2D;
 import com.jonmarx.util.BoundingBox3D;
 import com.jonmarx.util.BoundingBoxPlane;
+import com.jonmarx.util.StripGenerator;
 import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.LinkedList;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -43,9 +45,7 @@ public class Main {
     private int x = 640;
     private int y = 480;
     
-    private static State state;
-    
-    private Plugin[] plugins = new Plugin[] {/*new DiscordPlugin()*/};
+    private Game game;
     
     public static void main(String[] args) {
         Main main = new Main();
@@ -117,23 +117,27 @@ public class Main {
         }
         loadShaders();
         
-        MemoryCache.registerModel("gun", "/res/models/gun.obj");
-        MemoryCache.registerModel("amongus", "/res/models/amongus.obj", "Armature|Walk Cycle"); // lmao
-        MemoryCache.registerModel("bullet", "/res/models/bullet.obj");
-        MemoryCache.registerModel("terrain", "/res/models/terrainTest.obj");
-        MemoryCache.registerModel("terrain", "/res/models/area.obj");
+        //Renderer.addModel(MeshLoader.loadMesh("/res/models/dancing_vampire.dae", "/res/models/"));
+        Renderer.addModel(MeshLoader.loadMesh("/res/models/gun.obj", "/res/models/"));
+        Renderer.addModel(MeshLoader.loadMesh("/res/models/amongus.obj", "/res/models/", "Armature|Walk Cycle"));
+        Renderer.addModel(MeshLoader.loadMesh("/res/models/bullet.obj", "/res/models"));
+        Renderer.addModel(MeshLoader.loadMesh("/res/models/terrainTest.obj", "/res/models"));
+        Renderer.addModel(MeshLoader.loadMesh("/res/models/area.obj", "/res/models"));
         
-        state = new GameState();
-        for(Plugin plugin : plugins) {
-            plugin.init();
-        }
+        //Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/dancing_vampire.dae"), "lol"), lightShader);
+        Renderer.addEntity(new Gun(90f, 0.1f, new Vec3(0f), Renderer.getModel("/res/models/gun.obj"), "gun"), lightShader);
+        Renderer.addEntity(new Crewmate(90, new Vec3(0f,8f,0f), Renderer.getModel("/res/models/amongus.obj"), "amongus"), lightShader);
+        //Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/terrainTest.obj"), "terrain"), lightShader);
+        Renderer.addEntity(new SimpleEntity(new Mat4(), Renderer.getModel("/res/models/area.obj"), "terrain"), lightShader);
+        Renderer.addEntity(new CameraController("camera-controller"), null);
+        game = new Game(Renderer.getEntity("terrain"));
         
-        BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
-        BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0-6),new Vec2(0,4-6),new Vec2(2,4-6),new Vec2(2,0-6));
-        System.out.println(box1.sweepBox(box2, new Vec2(0,-1)));
-        //BoundingBox3D box1 = generateRectPrism(new Vec3(0,0,0), 5, 5, 5);
-        //BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 2f, 2);
+        //BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
+        //BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0),new Vec2(0,4),new Vec2(2,4),new Vec2(2,0));
         //System.out.println(box1.testBox(box2) || box2.testBox(box1));
+        BoundingBox3D box1 = generateRectPrism(new Vec3(0,0,0), 5, 5, 5);
+        BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 2f, 2);
+        System.out.println(box1.testBox(box2) || box2.testBox(box1));
         
         // i literally copied this from stackoverflow lol
         // i literally copied this from c code lol
@@ -171,19 +175,15 @@ public class Main {
     }
     
     public void render() {
-        if(suspend) {
-            try {
-                Thread.sleep(16);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        state.render();
+        Renderer.renderFromList();
         glfwSwapBuffers(window);
     }
     
     double prevX = 640/2;
     double prevY = 480/2;
+    double rotation = 0;
+    
+    boolean shooting = false;
     
     int tick = 0;
     
@@ -217,10 +217,14 @@ public class Main {
         
         glfwSetCursorPos(window, 640/2, 480/2);
         
-        state.update();
-        for(Plugin plugin : plugins) {
-            plugin.update();
+        rotation += 1;
+        
+        if(glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+            shooting = true;
         }
+        
+        //Renderer.getEntity("lol").getModel().getAnimator().updateAnimation(1f/60f);
+        Renderer.update();
     }
     
     public void cleanup() {
@@ -262,15 +266,11 @@ public class Main {
         return glfwGetMouseButton(window, button);
     }
     
+    public Game getGame() {
+        return game;
+    }
+    
     public static Main getInstance() {
         return instance;
-    }
-    
-    public static State getState() {
-        return state;
-    }
-    
-    public static void setState(State statee) {
-        state = statee;
     }
 }

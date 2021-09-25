@@ -13,17 +13,10 @@ public class MemoryCache {
     
     // i think its called a proxy?
     private static HashMap<String, String> modelProxies = new HashMap<>();
-    private static HashMap<String, String> animInfo = new HashMap<>();
-    
     private static HashMap<String, String> shaderProxies = new HashMap<>();
     
     public static void registerModel(String modelName, String resourceLocation) {
         modelProxies.put(modelName, resourceLocation);
-    }
-    
-    public static void registerModel(String modelName, String resourceLocation, String animationName) {
-        modelProxies.put(modelName, resourceLocation);
-        animInfo.put(modelName, animationName);
     }
     
     public static void registerShader(String shaderName, String resourceLocation) {
@@ -34,17 +27,10 @@ public class MemoryCache {
         Model resource = modelResources.get(modelName);
         if(resource != null) return resource;
         
-        Model model;
-        String anim = animInfo.get(modelName);
-        if(anim == null) {
-            model = MeshLoader.loadMesh(modelProxies.get(modelName), "/res/models/");
-        } else {
-            model = MeshLoader.loadMesh(modelProxies.get(modelName), "/res/models/", anim);
-        }
-        
+        Model model = MeshLoader.loadMesh(modelProxies.get(modelName), "/res/models/");
         if(model != null) {
-            modelResources.put(modelName, model);
-            return model;
+        	modelResources.put(modelName, model);
+        	return model;
         }
         
         return null;
@@ -56,8 +42,8 @@ public class MemoryCache {
         
         Shader shader = new Shader(shaderName + ".vs", shaderName + ".fs");
         if(shader != null) {
-            shaderResources.put(shaderName, shader);
-            return shader;
+        	shaderResources.put(shaderName, shader);
+        	return shader;
         }
         
         return null;

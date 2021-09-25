@@ -19,7 +19,7 @@ import static org.lwjgl.opengl.GL33C.*;
     public Shader(String vertexShader, String fragmentShader) {
         loadShaders(vertexShader, fragmentShader);
     }
-     
+	 
     private void loadShaders(String vertex, String fragment) {
         // shaders
         program = glCreateProgram();
@@ -68,7 +68,7 @@ import static org.lwjgl.opengl.GL33C.*;
         
         Cleanup.addShader(program);
     }
-    
+	
     private String readFile(String address) {
         Scanner sc = new Scanner(this.getClass().getResourceAsStream(address));
         String out = "";
@@ -82,11 +82,11 @@ import static org.lwjgl.opengl.GL33C.*;
     public int getProgram() {
         return program;
     }
-    
+	
     public int getUniform(String name) {
         return glGetUniformLocation(program, name);
     }
-    
+	
     public void setUniform(String name, Mat4 matrix) {
         glUniformMatrix4fv(glGetUniformLocation(program, name), false, matrix.getArray());
     }

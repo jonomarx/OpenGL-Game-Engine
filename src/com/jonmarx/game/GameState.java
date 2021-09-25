@@ -41,7 +41,7 @@ public class GameState extends State {
     private Vec3 GRAVITY = new Vec3(0f, -0.163f, 0f);
     @Override
     public void update() {
-        Entity[] entityList = entities.getEntities();
+        Entity[] entityList = entities;
         for(int i = 0; i < entityList.length; i++) {
             Entity entity = entityList[i];
             if(entity instanceof CollidableEntity) {
