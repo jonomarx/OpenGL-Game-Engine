@@ -8,10 +8,9 @@ package com.jonmarx.game;
 import com.jonmarx.core.Camera;
 import com.jonmarx.core.Entity;
 import com.jonmarx.core.Main;
-import com.jonmarx.core.Mesh;
 import com.jonmarx.core.Renderer;
+import com.jonmarx.core.State;
 import static glm_.Java.glm;
-import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
@@ -21,7 +20,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import glm_.vec3.Vec3;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -37,7 +35,10 @@ public class CameraController extends Entity {
 
     @Override
     public void update() {
-        Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
+    	State state = Main.getState();
+    	if(!(state instanceof GameState)) return;
+    	
+        Crewmate entity = (Crewmate) ((GameState) state).getEntity("amongus");
         Main main = Main.getInstance();
         Vec2 delta = main.getMouseMovement();
         float deltaX = delta.getX();

@@ -7,11 +7,13 @@ package com.jonmarx.game;
 
 import com.jonmarx.core.Camera;
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Main;
 import com.jonmarx.core.Model;
 import com.jonmarx.core.Renderer;
 import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
 import glm_.vec3.Vec3;
+import com.jonmarx.core.State;
 
 /**
  * An Among Us Crewmate 
@@ -147,7 +149,9 @@ public class Crewmate extends CollidableEntity {
     public void updateRotation() {
         locrot = new Mat4().translate(camera.getPos()).rotateXYZ(0, glm.radians(-camera.getYaw()), 0).scale(SCALESIZE);
         
-        Gun gun = (Gun) Renderer.getEntity("gun");
+        State state = Main.getState();
+        if(!(state instanceof GameState)) return;
+        Gun gun = (Gun) ((GameState) state).getEntity("gun");
         
         float yaw = getYaw();
         float pitch = getPitch();
@@ -183,11 +187,15 @@ public class Crewmate extends CollidableEntity {
     @Override
     public void update() {
         super.update();
+        
+        State state = Main.getState();
+        if(!(state instanceof GameState)) return;
+        
         if(clicking) {
             if(isFirstFrame) {
                 isFirstFrame = false;
-                Gun gun = (Gun) Renderer.getEntity("gun");
-                gun.shoot();
+                Gun gun = (Gun) ((GameState) state).getEntity("gun");
+                gun.shoot((GameState) state);
             }
         } else {
             isFirstFrame = true;

@@ -1,7 +1,5 @@
 package com.jonmarx.core;
 
-import com.jonmarx.animation.Animation;
-import com.jonmarx.game.CollidableEntity;
 import com.jonmarx.gfx.PostProcessingShader;
 import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
@@ -10,8 +8,6 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import org.lwjgl.BufferUtils;
@@ -43,11 +39,6 @@ public class Renderer {
     
     private static int x = 0;
     private static int y = 0;
-    
-    private static List<Entity> entityList = Collections.synchronizedList(new ArrayList<>());
-    private static List<Shader> shaderList = Collections.synchronizedList(new ArrayList<>());
-    
-    private static HashMap<String, Model> modelList = new HashMap<>();
     
     private static List<PostProcessingShader> shaders = new ArrayList<>();
     
@@ -176,7 +167,7 @@ public class Renderer {
         glEnableVertexAttribArray(4);
         
         shader.setUniform("model", modelMat);
-	glDrawElements(GL_TRIANGLES, model.indicies.length, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, model.indicies.length, GL_UNSIGNED_INT, 0);
         
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -184,7 +175,7 @@ public class Renderer {
         glDisableVertexAttribArray(3);
         glDisableVertexAttribArray(4);
         
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         
         glUseProgram(0);
@@ -216,7 +207,7 @@ public class Renderer {
     /**
      * Renders from the entityList
      */
-    public static void renderFromList() {
+    public static void renderFromList(EntityManager entities) {
         if(forceScreenFBO) {
             glClearColor(glm.abs(glm.pow(0.005f,1f/2.2f)),glm.abs(glm.pow(0.005f,1f/2.2f)),glm.abs(glm.pow(0.005f,1f/2.2f)),1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -228,7 +219,8 @@ public class Renderer {
             Mat4 lightProjection = glm.ortho(-10f, 10f, -10f, 10f, 0.1f, 100f);
             Mat4 lightView = glm.lookAt(lightPos, lightPos.minus(new Vec3(-1f, 0.1f, -1f).normalize()), new Vec3(0f,1f,0f));
             Mat4 lightSpaceMatrix = lightProjection.times(lightView);
-            for(Shader shader : new HashSet<>(shaderList)) {
+            for(String shaderr : new HashSet<String>(Arrays.asList(entities.getShaders()))) {
+                Shader shader = MemoryCache.getShader(shaderr);
                 if(shader == null) continue;
                 glUseProgram(shader.getProgram());
                 shader.setUniform("view", camera.getView());
@@ -240,8 +232,10 @@ public class Renderer {
                 shader.setUniform("dirLight.dir", lightPos.times(1).normalize());
                 glUseProgram(0);
             }
-            for(int i = 0; i < entityList.size(); i++) {
-                renderStaticModel(entityList.get(i), shaderList.get(i));
+            
+            Entity[] entityList = entities.getEntities();
+            for(int i = 0; i < entityList.length; i++) {
+                renderStaticModel(entityList[i], MemoryCache.getShader(entities.getShader(i)));
             }
         } else {
             prepareShadows();
@@ -253,11 +247,14 @@ public class Renderer {
             depthShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
             depthShader.setUniform("view", camera.getView());
             glUseProgram(0);
-            for(int i = 0; i < entityList.size(); i++) {
-                renderStaticModel(entityList.get(i), depthShader);
+            
+            Entity[] entityList = entities.getEntities();
+            for(int i = 0; i < entityList.length; i++) {
+                renderStaticModel(entityList[i], depthShader);
             }
             prepare();
-            for(Shader shader : new HashSet<>(shaderList)) {
+            for(String shaderr : new HashSet<String>(Arrays.asList(entities.getShaders()))) {
+                Shader shader = MemoryCache.getShader(shaderr);
                 if(shader == null) continue;
                 glUseProgram(shader.getProgram());
                 shader.setUniform("view", camera.getView());
@@ -269,8 +266,9 @@ public class Renderer {
                 shader.setUniform("dirLight.dir", lightPos.times(1).normalize());
                 glUseProgram(0);
             }
-            for(int i = 0; i < entityList.size(); i++) {
-                renderStaticModel(entityList.get(i), shaderList.get(i));
+            
+            for(int i = 0; i < entityList.length; i++) {
+                renderStaticModel(entityList[i], MemoryCache.getShader(entities.getShader(i)));
             }
             render();
         }
@@ -335,68 +333,8 @@ public class Renderer {
         shaders.remove(i);
     }
     
-    /**
-     * Adds an entity to the render list
-     * @param entity
-     * @param shader 
-     */
-    public static void addEntity(Entity entity, Shader shader) {
-        entityList.add(entity);
-        shaderList.add(shader);
-    }
-    
-    /**
-     * Removes an entity from the render list
-     * @param id 
-     */
-    public static void removeEntity(String id) {
-        for(Entity entity : entityList) {
-            if(entity.getId().equals(id)) {
-                entityList.remove(entity);
-                return;
-            }
-        }
-    }
-    
-    /**
-     * Gets an entity from the render list
-     * @param id
-     * @return 
-     */
-    public static Entity getEntity(String id) {
-        for(Entity entity : entityList) {
-            if(entity.getId().equals(id)) {
-                return entity;
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Gets an shader from the render list using an Entity ID
-     * @param id
-     * @return 
-     */
-    public static Shader getShader(String id) {
-        for(Entity entity : entityList) {
-            if(entity.getId().equals(id)) {
-                int idd = entityList.indexOf(entity);
-                return shaderList.get(idd);
-            }
-        }
-        return null;
-    }
-    
     public static Camera getCamera() {
         return camera;
-    }
-    
-    public static void addModel(Model model) {
-        modelList.put(model.getPath(), model);
-    }
-    
-    public static Model getModel(String path) {
-        return modelList.get(path);
     }
     
     /**
@@ -487,28 +425,13 @@ public class Renderer {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glUseProgram(0);
         glBindVertexArray(0);
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    
-    
-    private static Vec3 GRAVITY = new Vec3(0f, -0.163f, 0f);
-    /**
-     * Runs update() on all entities in list
-     */
-    public static void update() {
-        for(int i = 0; i < entityList.size(); i++) {
-            Entity entity = entityList.get(i);
-            if(entity instanceof CollidableEntity) {
-                ((CollidableEntity) entity).move(GRAVITY);
-            }
-            entity.update();
-        }
     }
     
     /**

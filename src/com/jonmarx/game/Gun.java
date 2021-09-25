@@ -7,8 +7,11 @@ package com.jonmarx.game;
 
 import com.jonmarx.core.Camera;
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.MemoryCache;
 import com.jonmarx.core.Model;
 import com.jonmarx.core.Renderer;
+import com.jonmarx.core.State;
+
 import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
 import glm_.vec3.Vec3;
@@ -138,12 +141,12 @@ public class Gun extends Entity {
     /**
      * spawns a bullet that dies after some time
      */
-    public void shoot() {
+    public void shoot(GameState state) {
         // crappy calculation for up vector, but close enough in most cases
         Vec3 front = camera.getFront().normalize();
         Vec3 right = front.cross(new Vec3(0,1,0)).normalize();
         Vec3 up = front.cross(right);
-        Renderer.addEntity(new Bullet(getYaw(), getPitch(), getPos().plus(up.times(-0.4f)).plus(right.times(-0.15f)), 30, 0.1f, Renderer.getModel("/res/models/bullet.obj"), "bullet"), Renderer.getShader(id));
+        state.addEntity(new Bullet(getYaw(), getPitch(), getPos().plus(up.times(-0.4f)).plus(right.times(-0.15f)), 30, 0.1f, MemoryCache.getModel("bullet"), "bullet"), "lightShader");
     }
 
     @Override

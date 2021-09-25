@@ -56,7 +56,10 @@ public class CollidableEntity extends Entity implements Collidable {
                 break;
             }
             
-            Main.getInstance().getGame().getCollisionBox().testCollision(packet);
+            GameState state = (GameState) Main.getState();
+            World world = new World(state.getEntity("terrain"));
+            world.testCollision(packet);
+            
             
             if(!packet.collided) {
                 packet.basePoint = packet.basePoint.plus(packet.velocity);

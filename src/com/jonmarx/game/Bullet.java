@@ -6,11 +6,12 @@
 package com.jonmarx.game;
 
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Main;
 import com.jonmarx.core.Model;
-import com.jonmarx.core.Renderer;
 import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
 import glm_.vec3.Vec3;
+import com.jonmarx.core.State;
 
 /**
  *
@@ -36,8 +37,11 @@ public class Bullet extends Entity {
     @Override
     public void update() {
         if(lifetime == 0) {
-            Renderer.removeEntity(id);
-            return;
+            State state = Main.getState();
+            if(state instanceof GameState) {
+                ((GameState) state).removeEntity(id);
+            	return;
+            }
         }
         Vec3 direction = new Vec3();
         direction.setX(glm.cos(glm.radians(yaw)) * glm.cos(glm.radians(pitch)));
