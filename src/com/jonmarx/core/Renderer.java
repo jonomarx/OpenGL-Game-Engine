@@ -205,6 +205,14 @@ public class Renderer {
     }
     
     /**
+     * 2D rendering, simple.
+     * @param entities 
+     */
+    public static void simple2DRender(EntityManager entities) {
+        
+    }
+    
+    /**
      * Renders from the entityList
      */
     public static void renderFromList(EntityManager entities) {

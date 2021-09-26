@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 
 /**
  * too lazy to write a UDP implemention
@@ -47,30 +48,59 @@ public class TCPConnection extends Connection {
         out = socket.getOutputStream();
     }
     
-    /**
-     * Please use uniform sized messages
-     */
     @Override
-    public byte[] getMessage() throws IOException {
-        if(socket.isClosed()) return new byte[0];
+    public Packet getMessage() throws IOException {
+        if(socket.isClosed()) return new NullPacket();
         
-        byte[] data = new byte[1024];
-        in.read(data);
-        return data;
+        byte[] num = new byte[1];
+        in.read(num);
+        
+        byte[] data;
+        int i;
+        Packet out;
+        
+        switch(num[0]) {
+            default:
+            case -1:
+                return new NullPacket();
+            case 0:
+                data = new byte[33];
+                i = in.read(data);
+                if(i != 33) {
+                    throw new RuntimeException("Ooops! something went wrong. Only read " + i + " bytes!");
+                }
+                out = new CreatePacket();
+                out.fromBytes(ByteBuffer.wrap(data));
+                return out;
+            case 1:
+                data = new byte[17];
+                i = in.read(data);
+                if(i != 17) {
+                    throw new RuntimeException("Ooops! something went wrong. Only read " + i + " bytes!");
+                }
+                out = new DeletePacket();
+                out.fromBytes(ByteBuffer.wrap(data));
+                return out;
+            case 2:
+                data = new byte[82];
+                i = in.read(data);
+                if(i != 82) {
+                    throw new RuntimeException("Ooops! something went wrong. Only read " + i + " bytes!");
+                }
+                out = new UpdatePacket();
+                out.fromBytes(ByteBuffer.wrap(data));
+                return out;
+        }
     }
     
-    /**
-     * Please use uniform sized messages
-     */
     @Override
-    public void sendMessage(byte[] msg) throws IOException {
+    public void sendMessage(Packet msg) throws IOException {
         if(socket.isClosed()) return;
         
-        out.write(msg);
+        out.write(msg.toBytes());
     }
     
     public boolean isClosed() {
         return socket.isClosed();
     }
-    
 }

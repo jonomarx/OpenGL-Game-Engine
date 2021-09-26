@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
  *
  */
 public class NullPacket extends Packet {
-    public final byte id = 0;
+    public final byte id = -1;
     
     @Override
     public byte[] toBytes() {

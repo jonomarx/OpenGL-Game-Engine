@@ -11,7 +11,7 @@ import glm_.mat4x4.Mat4;
  * @author Jon
  */
 public class UpdatePacket extends Packet {
-    public final byte type = 3;
+    public final byte type = 2;
     public UUID id;
     public Mat4 locrot;
     public byte frame;

@@ -19,7 +19,7 @@ public abstract class Connection {
         this.connectTo = connectTo;
     }
     
-    public abstract byte[] getMessage() throws IOException;
-    public abstract void sendMessage(byte[] msg) throws IOException;
+    public abstract Packet getMessage() throws IOException;
+    public abstract void sendMessage(Packet msg) throws IOException;
     public abstract boolean isClosed();
 }

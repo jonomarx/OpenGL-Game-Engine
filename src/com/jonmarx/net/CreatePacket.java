@@ -9,7 +9,7 @@ import java.util.UUID;
  *
  */
 public class CreatePacket extends Packet {
-    public final byte id = 1;
+    public final byte id = 0;
     public UUID entityId;
     public UUID createAs;
     

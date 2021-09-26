@@ -9,7 +9,7 @@ import java.util.UUID;
  *
  */
 public class DeletePacket extends Packet {
-    public final byte id = 2;
+    public final byte id = 1;
     public UUID entityId;
     
     @Override
