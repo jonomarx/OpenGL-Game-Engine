@@ -5,8 +5,15 @@
  */
 package com.jonmarx.game;
 
+import com.jonmarx.net.TCPConnectionNIO;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.nio.ByteBuffer;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,7 +21,8 @@ import java.net.ServerSocket;
  */
 public class ServerGameState extends GameState {
     
-    protected ServerSocket socket;
+    protected ServerSocketChannel socket;
+    protected List<TCPConnectionNIO> clients = new ArrayList<>();
     
     public ServerGameState() {
         super();
@@ -24,11 +32,32 @@ public class ServerGameState extends GameState {
     protected void init() {
         super.init();
         try {
-            socket = new ServerSocket(1884);
+            socket = ServerSocketChannel.open();
+            socket.bind(new InetSocketAddress(1884));
         } catch(IOException e) {
             throw new RuntimeException(e);
             // who tf cares about error catching
         }
-        socket.accept();
+    }
+    
+    @Override
+    public void update() {
+        super.update();
+        
+        // detect if new clients
+        try {
+            SocketChannel channel;
+            while((channel = socket.accept()) != null) {
+                clients.add(createClient(channel));
+            }
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+            // who tf cares about error catching
+        }
+    }
+    
+    private TCPConnectionNIO createClient(SocketChannel conn) throws IOException {
+        // init stuff related to client...
+        return new TCPConnectionNIO(conn);
     }
 }

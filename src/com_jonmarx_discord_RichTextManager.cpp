@@ -39,11 +39,11 @@ JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_pushRichText(JNI
     discord::Activity activity{};
     activity.SetState(strings->state);
     activity.SetDetails(strings->details);
-    activity.SetType(discord::ActivityType::Playing);
     activity.SetInstance(strings->instance[0] == 't');
     activity.SetName(strings->name);
     
     discord::ActivityType type = discord::ActivityType::Playing;
+    std::cout << strings->type << "\n";
     switch(strings->type[0]) {
         case 'p':
             type = discord::ActivityType::Playing;
@@ -57,14 +57,19 @@ JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_pushRichText(JNI
         case 'w':
             type = discord::ActivityType::Watching;
             break;
+        default:
+            type = discord::ActivityType::Playing;
+            break;
     }
+    activity.SetType(type);
     
     core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {
         
     });
     clean(strings);
     
-    std::cout << "(JNI) Updated status.";
+    std::cout << "(JNI) Updated status.\n";
+    std::cerr << "Does this print?\n";
 }
 JNIEXPORT void JNICALL Java_com_jonmarx_discord_RichTextManager_tick(JNIEnv * env, jobject obj) {
     core->RunCallbacks();

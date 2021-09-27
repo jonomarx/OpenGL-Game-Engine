@@ -59,11 +59,11 @@ public class RichTextManager {
         unsafe.putAddress(ptrcpy, details);
         
         ptrcpy += addressSize;
-        long type = generateCharArray(text.details);
+        long type = generateCharArray(text.type);
         unsafe.putAddress(ptrcpy, type);
         
         ptrcpy += addressSize;
-        long name = generateCharArray(text.details);
+        long name = generateCharArray(text.name);
         unsafe.putAddress(ptrcpy, name);
         
         ptrcpy += addressSize;

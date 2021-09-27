@@ -16,12 +16,13 @@ import com.jonmarx.core.Renderer;
 public class DiscordPlugin extends Plugin {
     @Override
     public void init() {
+        System.out.println("Discord plugin");
         RichTextManager text = RichTextManager.get();
         RichTextObject obj = new RichTextObject();
         obj.details = "<None>";
         obj.name = "Game Thing";
         obj.state = "Startup State";
-        obj.type = "type";
+        obj.type = "l";
         obj.instance = "f";
         text.updateRichText(obj);
     }
