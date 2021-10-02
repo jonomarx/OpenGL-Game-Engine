@@ -5,7 +5,9 @@ import com.jonmarx.game.Crewmate;
 import com.jonmarx.discord.DiscordPlugin;
 import com.jonmarx.game.GameState;
 import com.jonmarx.game.Gun;
+import com.jonmarx.game.MainState;
 import com.jonmarx.gfx.GammaPostProcessingShader;
+import com.jonmarx.gfx.KernelPostProcessingShader;
 import com.jonmarx.plugin.Plugin;
 import com.jonmarx.util.BoundingBox2D;
 import com.jonmarx.util.BoundingBox3D;
@@ -45,7 +47,7 @@ public class Main {
     
     private static State state;
     
-    private Plugin[] plugins = new Plugin[] {new DiscordPlugin()};
+    private Plugin[] plugins = new Plugin[] {/*new DiscordPlugin()*/};
     
     public static void main(String[] args) {
         Main main = new Main();
@@ -63,6 +65,7 @@ public class Main {
     
     private void loadShaders() {
     	MemoryCache.registerShader("lightShader", "/res/shaders/ContainerShader");
+    	MemoryCache.registerShader("2dShader", "/res/shaders/2dShader");
         Shader lightShader = MemoryCache.getShader("lightShader");
         
         glUseProgram(lightShader.program);
@@ -84,6 +87,28 @@ public class Main {
         lightShader.setUniform("pointLights[0].diffuse", new Vec3(0.4f, 0.4f, 0.4f));
         lightShader.setUniform("pointLights[0].specular", new Vec3(0.6f, 0.6f, 0.6f));
         lightShader.setUniform("pointLights[0].enabled", 1);
+        glUseProgram(0);
+        
+        Shader tdShader = MemoryCache.getShader("2dShader");
+        glUseProgram(tdShader.program);
+        
+        tdShader.setUniform("material.shininess", 64f);
+        tdShader.setUniform("material.diffuse", 1);
+        tdShader.setUniform("material.specular", 2);
+        
+        tdShader.setUniform("dirLight.dir", new Vec3(0.1f, 1f, 1f));
+        tdShader.setUniform("dirLight.ambient", new Vec3(0.02f, 0.02f, 0.02f));
+        tdShader.setUniform("dirLight.diffuse", new Vec3(0.02f, 0.02f, 0.02f));
+        tdShader.setUniform("dirLight.specular", new Vec3(0.1f, 0.1f, 0.1f));
+        
+        tdShader.setUniform("pointLights[0].position", lightPos);
+        tdShader.setUniform("pointLights[0].constant", 1.0f);
+        tdShader.setUniform("pointLights[0].linear", 0.07f);
+        tdShader.setUniform("pointLights[0].quadratic", 0.017f);
+        tdShader.setUniform("pointLights[0].ambient", new Vec3(0.2f, 0.2f, 0.2f));
+        tdShader.setUniform("pointLights[0].diffuse", new Vec3(0.4f, 0.4f, 0.4f));
+        tdShader.setUniform("pointLights[0].specular", new Vec3(0.6f, 0.6f, 0.6f));
+        tdShader.setUniform("pointLights[0].enabled", 1);
         glUseProgram(0);
     }
     
@@ -111,8 +136,9 @@ public class Main {
         
         Renderer.init(x, y, forceScreenFBO);
         if(!forceScreenFBO) {
-            //Shader kernelShader = new Shader("/res/shaders/kernelShader.vs", "/res/shaders/kernelShader.fs");
+            Shader kernelShader = new Shader("/res/shaders/kernelShader.vs", "/res/shaders/kernelShader.fs");
             Shader gammaShader = new Shader("/res/shaders/gammaShader.vs", "/res/shaders/gammaShader.fs");
+            
             //Renderer.addPostShader(new KernelPostProcessingShader(kernelShader, new float[] {2,2,2,2,-16,2,2,2,2}));
             Renderer.addPostShader(new GammaPostProcessingShader(gammaShader, 2.2f));
         }
@@ -123,6 +149,7 @@ public class Main {
         MemoryCache.registerModel("bullet", "/res/models/bullet.obj");
         MemoryCache.registerModel("terrain", "/res/models/terrainTest.obj");
         MemoryCache.registerModel("terrain", "/res/models/area.obj");
+        MemoryCache.registerModel("billboard", "/res/models/billboard.obj");
         
         state = new GameState();
         for(Plugin plugin : plugins) {

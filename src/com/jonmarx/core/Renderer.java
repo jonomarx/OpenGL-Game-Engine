@@ -140,6 +140,7 @@ public class Renderer {
      */
     public static void renderStaticModel(Mesh model, Mat4 modelMat, Shader shader) {
         int i;
+        // 1280
         for(i = 0; i < model.textures.length; i++) {
             glActiveTexture(GL_TEXTURE1 + i);
             glBindTexture(GL_TEXTURE_2D, model.textures[i].id);
@@ -204,12 +205,26 @@ public class Renderer {
         }
     }
     
+    private static void setup2DRender() {
+    	glViewport(0, 0, x, y);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        
+        glClearColor(0.005f,0.005f,0.005f,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+    }
+    
     /**
-     * 2D rendering, simple.
+     * 2D rendering, simpler, probably faster.
      * @param entities 
      */
     public static void simple2DRender(EntityManager entities) {
-        
+        setup2DRender();
+        Entity[] entityList = entities.getEntities();
+        for(int i = 0; i < entityList.length; i++) {
+            renderStaticModel(entityList[i], MemoryCache.getShader(entities.getShader(i)));
+        }
+        render();
     }
     
     /**
