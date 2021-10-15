@@ -65,6 +65,8 @@ public class Model {
         }
     }
     
+    protected Model() {}
+    
     public Map<String, BoneInfo> getBoneInfoMap() {
         return mBoneInfoMap;
     }

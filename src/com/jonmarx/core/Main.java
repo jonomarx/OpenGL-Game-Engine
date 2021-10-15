@@ -2,6 +2,7 @@ package com.jonmarx.core;
 
 import com.jonmarx.game.CameraController;
 import com.jonmarx.game.Crewmate;
+import com.jonmarx.game.GUIStateTest;
 import com.jonmarx.discord.DiscordPlugin;
 import com.jonmarx.game.GameState;
 import com.jonmarx.game.Gun;
@@ -151,7 +152,7 @@ public class Main {
         MemoryCache.registerModel("terrain", "/res/models/area.obj");
         MemoryCache.registerModel("billboard", "/res/models/billboard.obj");
         
-        state = new GameState();
+        state = new GUIStateTest();
         for(Plugin plugin : plugins) {
             plugin.init();
         }
@@ -288,6 +289,10 @@ public class Main {
     
     public int getMouseClicked(int button) {
         return glfwGetMouseButton(window, button);
+    }
+    
+    public long getWindow() {
+    	return window;
     }
     
     public static Main getInstance() {
