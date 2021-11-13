@@ -14,12 +14,12 @@ import java.util.UUID;
  */
 public class SimpleEntity extends Entity {
 
-    public SimpleEntity(Mat4 locrot, Model model) {
-        super(locrot, model, UUID.randomUUID().toString());
+    public SimpleEntity(Mat4 locrot, Model model, String shader) {
+        super(locrot, model, UUID.randomUUID().toString(), shader);
     }
     
-    public SimpleEntity(Mat4 locrot, Model model, String name) {
-        super(locrot, model, name);
+    public SimpleEntity(Mat4 locrot, Model model, String name, String shader) {
+        super(locrot, model, name, shader);
     }
 
     @Override

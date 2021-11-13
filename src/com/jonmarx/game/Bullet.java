@@ -6,6 +6,7 @@
 package com.jonmarx.game;
 
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Game;
 import com.jonmarx.core.Main;
 import com.jonmarx.core.Model;
 import static glm_.Java.glm;
@@ -24,8 +25,8 @@ public class Bullet extends Entity {
     private float pitch;
     private float speed;
 
-    public Bullet(float yaw, float pitch, Vec3 pos, int lifetime, float speed, Model model, String id) {
-        super(new Mat4(), model, id);
+    public Bullet(float yaw, float pitch, Vec3 pos, int lifetime, float speed, Model model, String id, String shader) {
+        super(new Mat4(), model, id, shader);
         this.lifetime = lifetime;
         this.yaw = yaw;
         this.pitch = pitch;
@@ -37,11 +38,8 @@ public class Bullet extends Entity {
     @Override
     public void update() {
         if(lifetime == 0) {
-            State state = Main.getState();
-            if(state instanceof GameState) {
-                ((GameState) state).removeEntity(id);
-            	return;
-            }
+            Game game = Main.getInstance().getGame();
+            game.removeEntity(id);
         }
         Vec3 direction = new Vec3();
         direction.setX(glm.cos(glm.radians(yaw)) * glm.cos(glm.radians(pitch)));

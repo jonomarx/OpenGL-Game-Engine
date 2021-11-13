@@ -60,21 +60,23 @@ public class TCPConnectionNIO extends Connection {
                 data = ByteBuffer.allocate(33);
                 socket.configureBlocking(true);
                 i = socket.read(data);
-                if(i != 33) {
+                if(i != 32) {
                     throw new RuntimeException("Ooops! something went wrong. Only read " + i + " bytes!");
                 }
                 out = new CreatePacket();
+                data.position(0);
                 out.fromBytes(data);
                 socket.configureBlocking(false);
                 return out;
             case 1:
-                data = ByteBuffer.allocate(17);
+                data = ByteBuffer.allocate(16);
                 socket.configureBlocking(true);
                 i = socket.read(data);
-                if(i != 17) {
+                if(i != 15) {
                     throw new RuntimeException("Ooops! something went wrong. Only read " + i + " bytes!");
                 }
                 out = new DeletePacket();
+                data.position(0);
                 out.fromBytes(data);
                 socket.configureBlocking(false);
                 return out;
@@ -82,10 +84,11 @@ public class TCPConnectionNIO extends Connection {
                 data = ByteBuffer.allocate(82);
                 socket.configureBlocking(true);
                 i = socket.read(data);
-                if(i != 82) {
+                if(i != 81) {
                     throw new RuntimeException("Ooops! something went wrong. Only read " + i + " bytes!");
                 }
                 out = new UpdatePacket();
+                data.position(0);
                 out.fromBytes(data);
                 socket.configureBlocking(false);
                 return out;
@@ -102,6 +105,6 @@ public class TCPConnectionNIO extends Connection {
     
     @Override
     public boolean isClosed() {
-        return !socket.isOpen();
+        return socket.socket().isOutputShutdown();
     }
 }

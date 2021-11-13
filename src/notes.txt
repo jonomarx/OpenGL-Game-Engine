@@ -1,0 +1,16 @@
+Note: update entity system.
+Entity data editing is fed through an "EntityManager" class (accessed via the State, ANY state, not just GameState)
+create an "impl" interface to run update code, UPDATE FIELD METHODS ARE HIDDEN
+feed EntityManager code to Plugins via onUpdate, etc.
+have entities store their own Shader (its a String)
+
+Move Plugin loading to "Game" (aka EntityManager) from Main
+fix suspend function to not lock up the entire game
+Game controls State
+
+Change server protocoll to use position, rotation, scale (9 floats) instead of a Mat4 (16 floats)
+although, it could be worse in the long run.
+
+implement ECS?
+lmao fix animation
+deffered shading

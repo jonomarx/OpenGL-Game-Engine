@@ -13,9 +13,9 @@ import com.jonmarx.core.Renderer;
  *
  * @author Jon
  */
-public class DiscordPlugin extends Plugin {
+public class DiscordPlugin implements Plugin {
     @Override
-    public void init() {
+    public void onInit() {
         System.out.println("Discord plugin");
         RichTextManager text = RichTextManager.get();
         RichTextObject obj = new RichTextObject();
@@ -29,7 +29,7 @@ public class DiscordPlugin extends Plugin {
     
     private int tick = 0;
     @Override
-    public void update() {
+    public void onUpdate() {
         RichTextManager text = RichTextManager.get();
         text.tick();
         tick++;

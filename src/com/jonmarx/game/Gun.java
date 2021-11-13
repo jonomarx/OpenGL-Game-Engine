@@ -7,6 +7,8 @@ package com.jonmarx.game;
 
 import com.jonmarx.core.Camera;
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Game;
+import com.jonmarx.core.Main;
 import com.jonmarx.core.MemoryCache;
 import com.jonmarx.core.Model;
 import com.jonmarx.core.Renderer;
@@ -40,8 +42,8 @@ public class Gun extends Entity {
      * @param model - What model to use
      * @param id - identification to retrieve later from <code>Renderer</code>
      */
-    public Gun(float yaw, float pitch, Vec3 pos, Model model, String id) {
-        super(new Mat4().rotateY(glm.radians(yaw)).translate(pos), model, id);
+    public Gun(float yaw, float pitch, Vec3 pos, Model model, String id, String shader) {
+        super(new Mat4().rotateY(glm.radians(yaw)).translate(pos), model, id, shader);
         camera.setYaw(yaw);
         camera.setPitch(pitch);
         camera.setPos(pos);
@@ -141,12 +143,13 @@ public class Gun extends Entity {
     /**
      * spawns a bullet that dies after some time
      */
-    public void shoot(GameState state) {
+    public void shoot() {
         // crappy calculation for up vector, but close enough in most cases
+    	Game state = Main.getInstance().getGame();
         Vec3 front = camera.getFront().normalize();
         Vec3 right = front.cross(new Vec3(0,1,0)).normalize();
         Vec3 up = front.cross(right);
-        state.addEntity(new Bullet(getYaw(), getPitch(), getPos().plus(up.times(-0.4f)).plus(right.times(-0.15f)), 30, 0.1f, MemoryCache.getModel("bullet"), "bullet"), "lightShader");
+        state.addEntity(new Bullet(getYaw(), getPitch(), getPos().plus(up.times(-0.4f)).plus(right.times(-0.15f)), 30, 0.1f, MemoryCache.getModel("bullet"), "bullet", "lightShader"));
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.jonmarx.core;
 
 import com.jonmarx.game.CameraController;
 import com.jonmarx.game.Crewmate;
-import com.jonmarx.game.GUIStateTest;
+import com.jonmarx.game.GamePlugin;
 import com.jonmarx.discord.DiscordPlugin;
 import com.jonmarx.game.GameState;
 import com.jonmarx.game.Gun;
@@ -10,6 +10,7 @@ import com.jonmarx.game.MainState;
 import com.jonmarx.gfx.GammaPostProcessingShader;
 import com.jonmarx.gfx.KernelPostProcessingShader;
 import com.jonmarx.plugin.Plugin;
+import com.jonmarx.state.ConnectionTestPlugin;
 import com.jonmarx.util.BoundingBox2D;
 import com.jonmarx.util.BoundingBox3D;
 import com.jonmarx.util.BoundingBoxPlane;
@@ -17,6 +18,7 @@ import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.lwjgl.glfw.GLFW.*;
@@ -46,9 +48,9 @@ public class Main {
     private int x = 640;
     private int y = 480;
     
-    private static State state;
+    private Game game;
     
-    private Plugin[] plugins = new Plugin[] {/*new DiscordPlugin()*/};
+    private Plugin[] plugins = new Plugin[] {new GamePlugin(), /*new DiscordPlugin(), */new ConnectionTestPlugin()};
     
     public static void main(String[] args) {
         Main main = new Main();
@@ -152,10 +154,8 @@ public class Main {
         MemoryCache.registerModel("terrain", "/res/models/area.obj");
         MemoryCache.registerModel("billboard", "/res/models/billboard.obj");
         
-        state = new GUIStateTest();
-        for(Plugin plugin : plugins) {
-            plugin.init();
-        }
+        game = new Game(Arrays.asList(plugins), new GameState());
+        game.init();
         
         BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
         BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0-6),new Vec2(0,4-6),new Vec2(2,4-6),new Vec2(2,0-6));
@@ -207,7 +207,8 @@ public class Main {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        state.render();
+        
+        game.render();
         glfwSwapBuffers(window);
     }
     
@@ -235,6 +236,10 @@ public class Main {
             p = false;
         }
         
+        for(Plugin plugin : plugins) {
+            plugin.onUpdate();
+        }
+        
         if(suspend) return;
         
         double[] x = new double[1];
@@ -246,10 +251,7 @@ public class Main {
         
         glfwSetCursorPos(window, 640/2, 480/2);
         
-        state.update();
-        for(Plugin plugin : plugins) {
-            plugin.update();
-        }
+        game.update();
     }
     
     public void cleanup() {
@@ -299,11 +301,7 @@ public class Main {
         return instance;
     }
     
-    public static State getState() {
-        return state;
-    }
-    
-    public static void setState(State statee) {
-        state = statee;
+    public Game getGame() {
+    	return game;
     }
 }

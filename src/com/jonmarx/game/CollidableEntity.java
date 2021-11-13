@@ -6,6 +6,7 @@
 package com.jonmarx.game;
 
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Game;
 import com.jonmarx.core.Main;
 import com.jonmarx.core.Model;
 import com.jonmarx.util.CollisionPacket;
@@ -24,8 +25,8 @@ public class CollidableEntity extends Entity implements Collidable {
     protected Vec3 rotation;
     protected Vec3 scale;
 
-    public CollidableEntity(Vec3 pos, Vec3 rotation, Vec3 scale, Model model, String id, Vec3 hitbox) {
-        super(new Mat4().translate(pos).rotateXYZ(rotation).scale(scale), model, id);
+    public CollidableEntity(Vec3 pos, Vec3 rotation, Vec3 scale, Model model, String id, Vec3 hitbox, String shader) {
+        super(new Mat4().translate(pos).rotateXYZ(rotation).scale(scale), model, id, shader);
         eSpace = hitbox;
         this.pos = pos;
         this.rotation = rotation;
@@ -56,7 +57,7 @@ public class CollidableEntity extends Entity implements Collidable {
                 break;
             }
             
-            GameState state = (GameState) Main.getState();
+            Game state = Main.getInstance().getGame();
             World world = new World(state.getEntity("terrain"));
             world.testCollision(packet);
             

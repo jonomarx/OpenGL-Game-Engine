@@ -7,6 +7,7 @@ package com.jonmarx.game;
 
 import com.jonmarx.core.Camera;
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Game;
 import com.jonmarx.core.Main;
 import com.jonmarx.core.Model;
 import com.jonmarx.core.Renderer;
@@ -41,8 +42,8 @@ public class Crewmate extends CollidableEntity {
      * @param model - What model to use
      * @param id - identification to retrieve later from <code>Renderer</code>
      */
-    public Crewmate(float yaw, Vec3 pos, Model model, String id) {
-        super(pos, new Vec3(), new Vec3(1f), model, id, new Vec3(0.61f,1.06f,0.61f));
+    public Crewmate(float yaw, Vec3 pos, Model model, String id, String shader) {
+        super(pos, new Vec3(), new Vec3(1f), model, id, new Vec3(0.61f,1.06f,0.61f), shader);
         camera.setYaw(yaw);
         camera.setPitch(0.1f);
         camera.setPos(pos);
@@ -149,9 +150,8 @@ public class Crewmate extends CollidableEntity {
     public void updateRotation() {
         locrot = new Mat4().translate(camera.getPos()).rotateXYZ(0, glm.radians(-camera.getYaw()), 0).scale(SCALESIZE);
         
-        State state = Main.getState();
-        if(!(state instanceof GameState)) return;
-        Gun gun = (Gun) ((GameState) state).getEntity("gun");
+        Game state = Main.getInstance().getGame();
+        Gun gun = (Gun) state.getEntity("gun");
         
         float yaw = getYaw();
         float pitch = getPitch();
@@ -188,14 +188,13 @@ public class Crewmate extends CollidableEntity {
     public void update() {
         super.update();
         
-        State state = Main.getState();
-        if(!(state instanceof GameState)) return;
+        Game state = Main.getInstance().getGame();
         
         if(clicking) {
             if(isFirstFrame) {
                 isFirstFrame = false;
-                Gun gun = (Gun) ((GameState) state).getEntity("gun");
-                gun.shoot((GameState) state);
+                Gun gun = (Gun) state.getEntity("gun");
+                gun.shoot();
             }
         } else {
             isFirstFrame = true;

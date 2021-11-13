@@ -5,13 +5,51 @@
  */
 package com.jonmarx.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * runs during update() and render()
- * runs game code
- * interchangable with other States, well maybe
+ * manages state stuff
  * @author Jon
  */
 public abstract class State {
-    public abstract void render();
-    public abstract void update();
+	private List<Entity> entities;
+	
+	public State() {
+		entities = new ArrayList<>();
+	}
+	
+	public void addEntity(Entity entity) {
+    	entities.add(entity);
+    }
+    
+    public boolean removeEntity(String id) {
+    	for(Entity entity : entities) {
+            if(entity.getId().equals(id)) {
+                entities.remove(entity);
+                return true;
+            }
+        }
+    	return false;
+    }
+    
+    public Entity[] getEntities() {
+        return entities.toArray(new Entity[0]);
+    }
+    
+    public Entity getEntity(String id) {
+        for(Entity entity : entities) {
+            if(entity.getId().equals(id)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+    
+    public Entity getEntity(int pos) {
+        return entities.get(pos);
+    }
+	
+	public abstract void update();
+	public abstract void render();
 }

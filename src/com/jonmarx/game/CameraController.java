@@ -7,6 +7,7 @@ package com.jonmarx.game;
 
 import com.jonmarx.core.Camera;
 import com.jonmarx.core.Entity;
+import com.jonmarx.core.Game;
 import com.jonmarx.core.Main;
 import com.jonmarx.core.Renderer;
 import com.jonmarx.core.State;
@@ -30,15 +31,14 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 public class CameraController extends Entity {
 
     public CameraController(String id) {
-        super(null, null, id);
+        super(null, null, id, null);
     }
 
     @Override
     public void update() {
-    	State state = Main.getState();
-    	if(!(state instanceof GameState)) return;
+    	Game state = Main.getInstance().getGame();
     	
-        Crewmate entity = (Crewmate) ((GameState) state).getEntity("amongus");
+        Crewmate entity = (Crewmate) state.getEntity("amongus");
         Main main = Main.getInstance();
         Vec2 delta = main.getMouseMovement();
         float deltaX = delta.getX();

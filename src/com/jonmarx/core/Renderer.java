@@ -218,11 +218,11 @@ public class Renderer {
      * 2D rendering, simpler, probably faster.
      * @param entities 
      */
-    public static void simple2DRender(EntityManager entities) {
+    public static void simple2DRender(Game entities) {
         setup2DRender();
         Entity[] entityList = entities.getEntities();
         for(int i = 0; i < entityList.length; i++) {
-            renderStaticModel(entityList[i], MemoryCache.getShader(entities.getShader(i)));
+            renderStaticModel(entityList[i], MemoryCache.getShader(entities.getEntity(i).getShader()));
         }
         render();
     }
@@ -230,7 +230,7 @@ public class Renderer {
     /**
      * Renders from the entityList
      */
-    public static void renderFromList(EntityManager entities) {
+    public static void renderFromList(Game entities) {
         if(forceScreenFBO) {
             glClearColor(glm.abs(glm.pow(0.005f,1f/2.2f)),glm.abs(glm.pow(0.005f,1f/2.2f)),glm.abs(glm.pow(0.005f,1f/2.2f)),1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -242,7 +242,8 @@ public class Renderer {
             Mat4 lightProjection = glm.ortho(-10f, 10f, -10f, 10f, 0.1f, 100f);
             Mat4 lightView = glm.lookAt(lightPos, lightPos.minus(new Vec3(-1f, 0.1f, -1f).normalize()), new Vec3(0f,1f,0f));
             Mat4 lightSpaceMatrix = lightProjection.times(lightView);
-            for(String shaderr : new HashSet<String>(Arrays.asList(entities.getShaders()))) {
+            for(Entity entity : entities.getEntities()) {
+            	String shaderr = entity.getShader();
                 Shader shader = MemoryCache.getShader(shaderr);
                 if(shader == null) continue;
                 glUseProgram(shader.getProgram());
@@ -258,7 +259,7 @@ public class Renderer {
             
             Entity[] entityList = entities.getEntities();
             for(int i = 0; i < entityList.length; i++) {
-                renderStaticModel(entityList[i], MemoryCache.getShader(entities.getShader(i)));
+                renderStaticModel(entityList[i], MemoryCache.getShader(entities.getEntity(i).getShader()));
             }
         } else {
             prepareShadows();
@@ -276,7 +277,8 @@ public class Renderer {
                 renderStaticModel(entityList[i], depthShader);
             }
             prepare();
-            for(String shaderr : new HashSet<String>(Arrays.asList(entities.getShaders()))) {
+            for(Entity entity : entityList) {
+            	String shaderr = entity.getShader();
                 Shader shader = MemoryCache.getShader(shaderr);
                 if(shader == null) continue;
                 glUseProgram(shader.getProgram());
@@ -291,7 +293,7 @@ public class Renderer {
             }
             
             for(int i = 0; i < entityList.length; i++) {
-                renderStaticModel(entityList[i], MemoryCache.getShader(entities.getShader(i)));
+                renderStaticModel(entityList[i], MemoryCache.getShader(entities.getEntity(i).getShader()));
             }
             render();
         }
