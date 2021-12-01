@@ -1,5 +1,6 @@
 package com.jonmarx.core;
 
+import com.jonmarx.game.ECSEntity;
 import com.jonmarx.gfx.PostProcessingShader;
 import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
@@ -205,6 +206,25 @@ public class Renderer {
         }
     }
     
+    public static void renderStaticModel(ECSEntity entity, Shader shader) {
+        if(entity.getField("model") == null) return;
+        Model mod = MemoryCache.getModel((String) entity.getField("model"));
+        if(mod == null) return;
+        
+        for(Mesh model : mod.getMeshes()) {
+            Mat4[] jointsMatrix = mod.getAnimator().getMatrices();
+            glUseProgram(shader.program);
+            shader.setUniform("jointsMatrix", jointsMatrix);
+            
+            Vec3 pos = (Vec3) entity.getField("position");
+            Vec3 rot = (Vec3) entity.getField("rotation");
+            Vec3 sca = (Vec3) entity.getField("scale");
+            
+            Mat4 locrot = new Mat4().translate(pos).rotateXYZ(0, glm.radians(-rot.getX()), glm.radians(rot.getY())).scale(sca);
+            renderStaticModel(model, locrot, shader);
+        }
+    }
+    
     private static void setup2DRender() {
     	glViewport(0, 0, x, y);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -294,6 +314,73 @@ public class Renderer {
             
             for(int i = 0; i < entityList.length; i++) {
                 renderStaticModel(entityList[i], MemoryCache.getShader(entities.getEntity(i).getShader()));
+            }
+            render();
+        }
+    }
+    
+    public static void renderFromList(List<ECSEntity> entities) {
+        if(forceScreenFBO) {
+            glClearColor(glm.abs(glm.pow(0.005f,1f/2.2f)),glm.abs(glm.pow(0.005f,1f/2.2f)),glm.abs(glm.pow(0.005f,1f/2.2f)),1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_DEPTH_TEST);
+            glBindTexture(GL_TEXTURE_2D, blankTexture.id);
+            glActiveTexture(GL_TEXTURE0);
+            
+            lightPos = new Vec3(0f,20f,0f);
+            Mat4 lightProjection = glm.ortho(-10f, 10f, -10f, 10f, 0.1f, 100f);
+            Mat4 lightView = glm.lookAt(lightPos, lightPos.minus(new Vec3(-1f, 0.1f, -1f).normalize()), new Vec3(0f,1f,0f));
+            Mat4 lightSpaceMatrix = lightProjection.times(lightView);
+            for(ECSEntity entity : entities) {
+            	String shaderr = (String) entity.getField("shader");
+                Shader shader = MemoryCache.getShader(shaderr);
+                if(shader == null) continue;
+                glUseProgram(shader.getProgram());
+                shader.setUniform("view", camera.getView());
+                shader.setUniform("viewPos", camera.getPos());
+                shader.setUniform("projection", glm.perspective(glm.radians(45.0f), ((float)x) / y, 0.01f, 1000.0f));
+                shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+                shader.setUniform("shadowTex", 0);
+                shader.setUniform("lightPos", lightPos);
+                shader.setUniform("dirLight.dir", lightPos.times(1).normalize());
+                glUseProgram(0);
+            }
+            
+            for(int i = 0; i < entities.size(); i++) {
+                renderStaticModel(entities.get(i), MemoryCache.getShader((String) entities.get(i).getField("shader")));
+            }
+        } else {
+            prepareShadows();
+            lightPos = new Vec3(0f,10f,-36f);
+            glUseProgram(depthShader.program);
+            Mat4 lightProjection = glm.ortho(-10f, 10f, -10f, 10f, 0.1f, 100f);
+            Mat4 lightView = glm.lookAt(lightPos, lightPos.minus(new Vec3(0f, 1f, -2f).normalize()), new Vec3(0f,1f,0f));
+            Mat4 lightSpaceMatrix = lightProjection.times(lightView);
+            depthShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+            depthShader.setUniform("view", camera.getView());
+            glUseProgram(0);
+            
+            for(int i = 0; i < entities.size(); i++) {
+                renderStaticModel(entities.get(i), MemoryCache.getShader((String) entities.get(i).getField("shader")));
+            }
+            prepare();
+            for(ECSEntity entity : entities) {
+            	String shaderr = (String) entity.getField("shader");
+                Shader shader = MemoryCache.getShader(shaderr);
+                if(shader == null) continue;
+                glUseProgram(shader.getProgram());
+                shader.setUniform("view", camera.getView());
+                shader.setUniform("viewPos", camera.getPos());
+                shader.setUniform("projection", glm.perspective(glm.radians(45.0f), ((float)x) / y, 0.01f, 1000.0f));
+                shader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+                shader.setUniform("shadowTex", 0);
+                shader.setUniform("lightPos", lightPos);
+                shader.setUniform("dirLight.dir", lightPos.times(1).normalize());
+                glUseProgram(0);
+            }
+            
+            for(int i = 0; i < entities.size(); i++) {
+                renderStaticModel(entities.get(i), MemoryCache.getShader((String) entities.get(i).getField("shader")));
             }
             render();
         }

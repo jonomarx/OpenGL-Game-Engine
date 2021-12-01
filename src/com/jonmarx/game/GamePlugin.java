@@ -15,10 +15,10 @@ public class GamePlugin implements Plugin {
 	public void onInit() {
 		System.out.println("Inited!");
 		Game game = Main.getInstance().getGame();
-        game.addEntity(new Gun(90f, 0.1f, new Vec3(0f), MemoryCache.getModel("gun"), "gun", "lightShader"));
-        game.addEntity(new Crewmate(90, new Vec3(0f,8f,0f), MemoryCache.getModel("amongus"), "amongus", "lightShader"));
+        //game.addEntity(new Gun(90f, 0.1f, new Vec3(0f), MemoryCache.getModel("gun"), "gun", "lightShader"));
+        //game.addEntity(new Crewmate(90, new Vec3(0f,8f,0f), MemoryCache.getModel("amongus"), "amongus", "lightShader"));
         game.addEntity(new SimpleEntity(new Mat4(), MemoryCache.getModel("terrain"), "terrain", "lightShader"));
-        game.addEntity(new CameraController("camera-controller"));
+        //game.addEntity(new CameraController("camera-controller"));
 	}
 	
 	private Vec3 GRAVITY = new Vec3(0f, -0.163f, 0f);

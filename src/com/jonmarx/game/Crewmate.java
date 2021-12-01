@@ -15,6 +15,8 @@ import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
 import glm_.vec3.Vec3;
 import com.jonmarx.core.State;
+import com.jonmarx.sound.SoundListener;
+import com.jonmarx.sound.SoundPlayer;
 
 /**
  * An Among Us Crewmate 
@@ -141,6 +143,7 @@ public class Crewmate extends CollidableEntity {
         super.move(direction);
         camera.setPos(pos);
         updateRotation();
+        SoundListener.setPosition(pos);
     }
     
     /**

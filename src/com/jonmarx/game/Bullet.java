@@ -13,6 +13,8 @@ import static glm_.Java.glm;
 import glm_.mat4x4.Mat4;
 import glm_.vec3.Vec3;
 import com.jonmarx.core.State;
+import com.jonmarx.sound.SoundListener;
+import com.jonmarx.sound.SoundPlayer;
 
 /**
  *
@@ -34,7 +36,7 @@ public class Bullet extends Entity {
         this.speed = speed;
         updateRotation();
     }
-
+    int num = 0;
     @Override
     public void update() {
         if(lifetime == 0) {
@@ -49,6 +51,11 @@ public class Bullet extends Entity {
         pos = pos.plus(direction.normalize().times(speed));
         lifetime--;
         updateRotation();
+        num++;
+        if(num == 12) {
+        	SoundPlayer.playSound();
+        	SoundPlayer.getSource().setPosition(this.pos);
+        }
     }
     
     private void updateRotation() {

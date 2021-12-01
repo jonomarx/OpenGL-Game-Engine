@@ -50,7 +50,7 @@ public class Main {
     
     private Game game;
     
-    private Plugin[] plugins = new Plugin[] {new GamePlugin(), /*new DiscordPlugin(), */new ConnectionTestPlugin()};
+    private Plugin[] plugins = new Plugin[] {new GamePlugin(), /*new DiscordPlugin(),*/};
     
     public static void main(String[] args) {
         Main main = new Main();
