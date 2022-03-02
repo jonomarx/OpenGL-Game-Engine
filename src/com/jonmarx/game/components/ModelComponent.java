@@ -3,9 +3,9 @@ package com.jonmarx.game.components;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jonmarx.game.ECSComponent;
+import org.json.JSONObject;
 
-import glm_.vec3.Vec3;
+import com.jonmarx.game.ECSComponent;
 
 public class ModelComponent extends ECSComponent {
 	
@@ -47,5 +47,22 @@ public class ModelComponent extends ECSComponent {
 				throw new RuntimeException("THIS SHOULDNT HAPPEN BTW");
 		}
 	}
-
+	
+	@Override
+	public JSONObject convertToJSON() {
+		JSONObject out = new JSONObject();
+		
+		out.put("type", "modelComponent");
+		out.put("model", model);
+		out.put("shader", shader);
+		return out;
+	}
+	
+	@Override
+	public ECSComponent parseJSON(JSONObject obj) {
+		ModelComponent out = new ModelComponent();
+		out.model = obj.getString("model");
+		out.shader = obj.getString("shader");
+		return out;
+	}
 }

@@ -95,6 +95,7 @@ public class Model {
             
             textures.add(new Texture(image));
         }
+        pathh.free();
     }
     
     private void extractBoneWeights(Vertex[] vertices, AIMesh mesh, AIScene scene) {

@@ -10,12 +10,14 @@ import java.util.HashMap;
 public class MemoryCache {
     private static HashMap<String, Model> modelResources = new HashMap<>();
     private static HashMap<String, Shader> shaderResources = new HashMap<>();
+    private static HashMap<String, AudioBuffer> audioResources = new HashMap<>();
     
     // i think its called a proxy?
     private static HashMap<String, String> modelProxies = new HashMap<>();
     private static HashMap<String, String> animInfo = new HashMap<>();
     
     private static HashMap<String, String> shaderProxies = new HashMap<>();
+    private static HashMap<String, String> audioProxies = new HashMap<>();
     
     public static void registerModel(String modelName, String resourceLocation) {
         modelProxies.put(modelName, resourceLocation);
@@ -28,6 +30,10 @@ public class MemoryCache {
     
     public static void registerShader(String shaderName, String resourceLocation) {
     	shaderProxies.put(shaderName, resourceLocation);
+    }
+    
+    public static void registerAudio(String audioName, String resourceLocation) {
+    	audioProxies.put(audioName, resourceLocation);
     }
     
     public static Model getModel(String modelName) {
@@ -59,7 +65,18 @@ public class MemoryCache {
             shaderResources.put(shaderName, shader);
             return shader;
         }
-        
         return null;
+    }
+    
+    public static AudioBuffer getAudio(String audioName) {
+    	AudioBuffer resource = audioResources.get(audioName);
+    	if(audioName == null) return null;
+    	if(resource != null) return resource;
+    	AudioBuffer audio = new AudioBuffer(audioProxies.get(audioName));
+    	if(audio != null) {
+    		audioResources.put(audioName, audio);
+    		return audio;
+    	}
+    	return null;
     }
 }

@@ -14,16 +14,32 @@ import com.jonmarx.state.ConnectionTestPlugin;
 import com.jonmarx.util.BoundingBox2D;
 import com.jonmarx.util.BoundingBox3D;
 import com.jonmarx.util.BoundingBoxPlane;
+import com.jonmarx.util.ObjectBoundingBox;
+
 import glm_.mat4x4.Mat4;
 import glm_.vec2.Vec2;
 import glm_.vec3.Vec3;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.AL10.AL_INVERSE_DISTANCE;
+import static org.lwjgl.openal.AL10.alDistanceModel;
+import static org.lwjgl.openal.ALC10.alcCreateContext;
+import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
+import static org.lwjgl.openal.ALC10.alcOpenDevice;
+
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.system.Configuration;
+
 import static org.lwjgl.opengl.GL33C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -50,7 +66,7 @@ public class Main {
     
     private Game game;
     
-    private Plugin[] plugins = new Plugin[] {new GamePlugin(), /*new DiscordPlugin(),*/};
+    private Plugin[] plugins = new Plugin[] {new GamePlugin()};
     
     public static void main(String[] args) {
         Main main = new Main();
@@ -116,6 +132,11 @@ public class Main {
     }
     
     public void run(boolean forceScreenFBO) {
+    	Configuration.DEBUG.set(true);
+    	Configuration.DEBUG_STREAM.set(System.out);
+    	Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+    	Configuration.DEBUG_STACK.set(true);
+    	
         errorCallback = GLFWErrorCallback.createPrint(System.err).set();
         glfwInit();
         
@@ -137,32 +158,45 @@ public class Main {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPos(window, 640/2, 480/2);
         
+        long device = alcOpenDevice((ByteBuffer)null);
+		ALCCapabilities deviceCaps = ALC.createCapabilities(device);
+		long context = alcCreateContext(device, (IntBuffer)null);
+		alcMakeContextCurrent(context);
+		AL.createCapabilities(deviceCaps);
+		alDistanceModel(AL_INVERSE_DISTANCE);
+        
         Renderer.init(x, y, forceScreenFBO);
         if(!forceScreenFBO) {
             Shader kernelShader = new Shader("/res/shaders/kernelShader.vs", "/res/shaders/kernelShader.fs");
             Shader gammaShader = new Shader("/res/shaders/gammaShader.vs", "/res/shaders/gammaShader.fs");
             
-            //Renderer.addPostShader(new KernelPostProcessingShader(kernelShader, new float[] {2,2,2,2,-16,2,2,2,2}));
+            Renderer.addPostShader(new KernelPostProcessingShader(kernelShader, new float[] {2,2,2,2,-16,2,2,2,2}));
             Renderer.addPostShader(new GammaPostProcessingShader(gammaShader, 2.2f));
         }
         loadShaders();
         
         MemoryCache.registerModel("gun", "/res/models/gun.obj");
+        MemoryCache.registerModel("speaker", "/res/models/speaker.obj");
         MemoryCache.registerModel("amongus", "/res/models/amongus.obj", "Armature|Walk Cycle"); // lmao
         MemoryCache.registerModel("bullet", "/res/models/bullet.obj");
         MemoryCache.registerModel("terrain", "/res/models/terrainTest.obj");
         MemoryCache.registerModel("terrain", "/res/models/area.obj");
         MemoryCache.registerModel("billboard", "/res/models/billboard.obj");
         
+        MemoryCache.registerAudio("forecastSlower.ogg", "/res/sounds/forecastSlower.ogg");
+        MemoryCache.registerAudio("forecastSlower.ogg2", "/res/sounds/forecastSlower.ogg");
+        
         game = new Game(Arrays.asList(plugins), new GameState());
         game.init();
         
-        BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
+        /*BoundingBox2D box1 = new BoundingBox2D(new Vec2(1,1),new Vec2(5,3),new Vec2(3,7),new Vec2(-1,5));
         BoundingBox2D box2 = new BoundingBox2D(new Vec2(0,0-6),new Vec2(0,4-6),new Vec2(2,4-6),new Vec2(2,0-6));
-        System.out.println(box1.sweepBox(box2, new Vec2(0,-1)));
-        //BoundingBox3D box1 = generateRectPrism(new Vec3(0,0,0), 5, 5, 5);
-        //BoundingBox3D box2 = generateRectPrism(new Vec3(1,-1,1), 2, 2f, 2);
-        //System.out.println(box1.testBox(box2) || box2.testBox(box1));
+        System.out.println(box1.sweepBox(box2, new Vec2(0,-1)));*/
+        
+        ObjectBoundingBox box1 = new ObjectBoundingBox(new Vec3(0.5f,0.5f,0.5f), new Vec3(1,1,1));
+        ObjectBoundingBox box2 = new ObjectBoundingBox(new Vec3(2.5f,0.5f,0.5f), new Vec3(1,1,1));
+        
+        System.out.println(box1.sweepTest(box2, new Vec3(-2.0f,0.0f,0.0f)));
         
         // i literally copied this from stackoverflow lol
         // i literally copied this from c code lol

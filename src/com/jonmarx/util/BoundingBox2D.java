@@ -95,8 +95,8 @@ public class BoundingBox2D {
         Vec2 planeNormal = getPerpVector(p2.minus(p1).normalize());
         
         // signed distance approach
-        Vec2 lineVector = p1.minus(p2);
-        float edge2 = glm.length(lineVector);
+        Vec2 lineVector = p1.minus(p2); // vector between two vertices
+        float edge2 = glm.length(lineVector); // length of edge
         
         Float min = null;
         Float max = null;
@@ -109,9 +109,11 @@ public class BoundingBox2D {
         if(min >= 0 && min <= edge2) return 0;
         if(max >= 0 && max <= edge2) return 0;
         
-        Vec2 pointt = b.points[0].plus(direction);
-        Vec2 aPoint = b.points[0].minus(planeNormal.times(distanceToEdge(planePoint, planeNormal, b.points[0])));
-        Vec2 aaPoint = pointt.minus(planeNormal.times(distanceToEdge(planePoint, planeNormal, pointt)));
+        // TLDR; converts direction (the movement vector) into 1d
+        
+        Vec2 pointt = direction; // effectivly just a vector
+        Vec2 aPoint = planeNormal.times(distanceToEdge(planePoint, planeNormal, new Vec2(0,0))).times(-1); // origin
+        Vec2 aaPoint = pointt.minus(planeNormal.times(distanceToEdge(planePoint, planeNormal, pointt))); // 
         
         float APoint = projectPoint(planePoint, planeNormal, lineVector, aPoint);
         float AAPoint = projectPoint(planePoint, planeNormal, lineVector, aaPoint);

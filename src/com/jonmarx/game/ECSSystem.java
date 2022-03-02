@@ -56,10 +56,13 @@ public abstract class ECSSystem {
 	protected final void update() {
 		List<ECSEvent>[] events = (List<ECSEvent>[]) new List[messageFilter.length];
 		for(int i = 0; i < messageFilter.length; i++) {
-			events[i] = new LinkedList<>(ECSEventManager.retrieveEvents(messageFilter[i]));
+			List<ECSEvent> eventz = ECSEventManager.retrieveEvents(messageFilter[i]);
+			if(eventz == null) continue;
+			events[i] = new LinkedList<>(eventz);
 			events[i].stream().filter(masterRule);
 		}
 		for(List<ECSEvent> event : events) {
+			if(event == null) continue;
 			updateI(event);
 		}
 		updateO();

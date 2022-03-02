@@ -41,10 +41,10 @@ public class SoundPlayer {
 	private static SoundSource source;
 	public static void createSource() {
 		source = new SoundSource();
-		source.setGain(0.5f);
-		source.setPitch(1);
-		source.setPosition(new Vec3(0,0,0));
-		source.setVelocity(new Vec3(0,0,0));
+		source.setFloat(AL_GAIN, 0.5f);
+		source.setFloat(AL_PITCH, 1);
+		source.setVec3(AL_POSITION, new Vec3(0,0,0));
+		source.setVec3(AL_VELOCITY, new Vec3(0,0,0));
 	}
 	
 	private static int buffer;
@@ -53,7 +53,7 @@ public class SoundPlayer {
 		IntBuffer channelsBuffer = stackMallocInt(1);
 		stackPush();
 		IntBuffer sampleRateBuffer = stackMallocInt(1);
-		ShortBuffer rawAudioBuffer = stb_vorbis_decode_filename("D:\\backup\\memes (video and audio)\\wait_incomplete.ogg", channelsBuffer, sampleRateBuffer);
+		ShortBuffer rawAudioBuffer = stb_vorbis_decode_filename("src/res/sounds/forecastSlower.ogg", channelsBuffer, sampleRateBuffer);
 		int channels = channelsBuffer.get();
 		int sampleRate = sampleRateBuffer.get();
 		System.out.println("Channels: " + channels);

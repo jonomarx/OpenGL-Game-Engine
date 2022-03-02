@@ -39,9 +39,9 @@ public class DiscordPlugin implements Plugin {
             //Crewmate entity = (Crewmate) Renderer.getEntity("amongus");
             obj.details = "Position: " + /*entity.getPos()*/ "N/A";
             obj.name = "Game Thing";
-            obj.state = "In The Game";
-            obj.type = "p";
-            obj.instance = "f";
+            obj.state = "Listening To \"Music\"";
+            obj.type = "l";
+            obj.instance = "t";
             text.updateRichText(obj);
         }
     }

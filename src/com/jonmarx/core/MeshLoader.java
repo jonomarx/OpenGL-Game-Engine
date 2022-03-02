@@ -86,7 +86,6 @@ public class MeshLoader {
                 aiFile.FileSizeProc().free();
             }
         });
-        
         AIScene scene = aiImportFileEx(filename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FixInfacingNormals, fileIO);
         if(scene == null) {
             System.out.println("ERROR IMPORTING");
@@ -95,7 +94,8 @@ public class MeshLoader {
         Model out = new Model(scene, filename, path);
         Animation animation = new Animation(scene, out, animationName);
         out.setAnimator(new Animator(animation));
-        scene.free();
+        fileIO.OpenProc().free();
+        fileIO.CloseProc().free();
         return out;
     }
     

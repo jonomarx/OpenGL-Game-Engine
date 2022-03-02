@@ -7,7 +7,12 @@ package com.jonmarx.core;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.lwjgl.opengl.GL;
+
 import static org.lwjgl.opengl.GL33C.*;
+import static org.lwjgl.openal.AL11.*;
+import static org.lwjgl.openal.ALC11.*;
 
 /**
  * holds a giant list of objects to cleanup
@@ -20,6 +25,7 @@ public class Cleanup {
     private static List<Integer> renderbuffers = new ArrayList<>();
     private static List<Integer> arraybuffers = new ArrayList<>();
     private static List<Integer> drawingbuffers = new ArrayList<>();
+    private static List<Integer> audiobuffers = new ArrayList<>();
     
     public static void addTexture(int texture) {
         textures.add(texture);
@@ -49,6 +55,10 @@ public class Cleanup {
         drawingbuffers.add(ibo);
     }
     
+    public static void addAudio(int audio) {
+    	audiobuffers.add(audio);
+    }
+    
     public static void cleanup() {
         for(int texture : textures) {
             glDeleteTextures(texture);
@@ -74,6 +84,17 @@ public class Cleanup {
             glDeleteBuffers(drawingbuffer);
         }
         System.out.println("cleaned up " + drawingbuffers.size() + " VBOs and IBOs");
+        for(int audiobuffer : audiobuffers) {
+        	alDeleteBuffers(audiobuffer);
+        }
+        System.out.println("cleaned up " + audiobuffers.size() + " audio buffers");
+        
+        long context = alcGetCurrentContext();
+        long device = alcGetContextsDevice(context);
+        alcMakeContextCurrent(0);
+        alcDestroyContext(context);
+        alcCloseDevice(device);
+        System.out.println("shutdown openal");
         
         System.out.println("cleanup finished");
     }

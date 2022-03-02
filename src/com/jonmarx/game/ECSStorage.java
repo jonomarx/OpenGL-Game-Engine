@@ -1,10 +1,15 @@
 package com.jonmarx.game;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.UUID;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Stores components
@@ -18,6 +23,8 @@ public class ECSStorage {
 	private static Map<String, ECSComponent> sampleStore = new HashMap<>();
 	
 	private static Map<UUID, ECSEntity> entities = new HashMap<>();
+	
+	private static Map<String, Object> globalVariableTable = new HashMap<>();
 	
 	public static void init() {
 		
@@ -40,6 +47,58 @@ public class ECSStorage {
 			initComponent(component, data, id);
 		}
 		entities.put(base.getId(), base);
+	}
+	
+	/**
+	 * Creats an entity from JSON
+	 * @param the JSON object used to make the entity
+	 */
+	public static ECSEntity createEntity(JSONObject json) {
+		UUID uuid;
+		if(json.isNull("id")) {
+			uuid = UUID.randomUUID();
+		} else {
+			String id = json.getString("id");
+			uuid = UUID.fromString(id);
+		}
+		
+		HashSet<String> componentz = new HashSet<>();
+		JSONArray array = json.getJSONArray("components");
+		
+		for(int i = 0; i < array.length(); i++) {
+			JSONObject component = array.getJSONObject(i);
+			ECSComponent sample = sampleStore.get(component.getString("type"));
+			componentz.add(sample.getName());
+			
+			ECSComponent data = sample.parseJSON(component);
+			components.get(sample.getName()).put(uuid, data);
+		}
+		
+		ECSEntity entity = new ECSEntity(componentz, "json-entity");
+		entity.setId(uuid);
+		entities.put(uuid, entity);
+		return entity;
+	}
+	
+	/**
+	 * Loads JSON from a file
+	 * @param file
+	 * @return
+	 */
+	public static ECSEntity[] createEntities(String file) {
+		StringBuilder data = new StringBuilder();
+		Scanner sc = new Scanner(ECSStorage.class.getResourceAsStream(file));
+		while(sc.hasNextLine()) {
+			data.append(sc.nextLine() + "\n");
+		}
+		
+		JSONArray raw = new JSONArray(data.toString());
+		ECSEntity[] out = new ECSEntity[raw.length()];
+		for(int i = 0; i < raw.length(); i++) {
+			out[i] = createEntity(raw.getJSONObject(i));
+		}
+		
+		return out;
 	}
 	
 	/**
@@ -79,6 +138,18 @@ public class ECSStorage {
 	public static void registerComponent(ECSComponent component) {
 		components.put(component.getName(), new HashMap<>());
 		sampleStore.put(component.getName(), component);
+	}
+	
+	public static void putVariable(String name, Object variable) {
+		globalVariableTable.put(name, variable);
+	}
+	
+	public static Object getVariable(String name) {
+		return globalVariableTable.get(name);
+	}
+	
+	public static void deleteVariable(String name) {
+		globalVariableTable.remove(name);
 	}
 	
 	private static ECSComponent putComponent(String componentName, UUID entityId) {

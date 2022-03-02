@@ -16,7 +16,6 @@ public class GravitySystem extends ECSSystem {
 	private static String[] messageFilter = new String[] {};
 	private static String[] componentFilter = new String[] {};
 	
-	private List<ECSEntity> entities = new LinkedList<>();
 	private final Vec3 GRAVITY = new Vec3(0, -0.163f, 0);
 
 	public GravitySystem() {
@@ -25,28 +24,18 @@ public class GravitySystem extends ECSSystem {
 
 	@Override
 	protected void updateI(List<ECSEvent> events) {
-		for(ECSEvent event : events) {
-			ECSEntity entity = ECSStorage.getEntity(event.getEntity());
-			entities.remove(entity);
-			
-			String[] data = event.getData().split("\\|");
-			Vec3 position = new Vec3(Float.parseFloat(data[0]), Float.parseFloat(data[1]), Float.parseFloat(data[2])).plus(GRAVITY);
-			event.setData(position.getX() + "|" + position.getY() + "|" + position.getZ());
-		}
+		
 	}
 
 	@Override
 	protected void updateO() {
-		for(ECSEntity entity : entities) {
-			ECSEvent event = new ECSEvent("move", entity.getId(), "0|-0.163|0");
-			ECSEventManager.addEvent(event);
-		}
-		
-		entities = ECSStorage.getEntities();
+		List<ECSEntity>entities = ECSStorage.getEntities();
 		ECSEntity[] e = entities.toArray(new ECSEntity[0]);
 		for(ECSEntity entity : e) {
-			if(!entity.containsComponent("collisionComponent")) {
-				entities.remove(entity);
+			if(entity.containsComponent("physicsComponent")) {
+				float mass = (Float) entity.getField("mass");
+				Vec3 plusForce = GRAVITY.times(mass);
+				//entity.setField("force", ((Vec3) entity.getField("force")).plus(plusForce));
 			}
 		}
 	}

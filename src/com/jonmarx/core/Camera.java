@@ -86,6 +86,10 @@ public class Camera {
         return cameraFront;
     }
     
+    public Vec3 getUp() {
+    	return cameraUp;
+    }
+    
     public void setYaw(float yaw) {
         this.yaw = yaw;
         updateRotation();

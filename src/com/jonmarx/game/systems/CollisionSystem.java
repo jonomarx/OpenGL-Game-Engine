@@ -18,8 +18,8 @@ import glm_.vec3.Vec3;
 
 public class CollisionSystem extends ECSSystem {
 
-	private static String[] messageFilter = new String[] {"move"};
-	private static String[] componentFilter = new String[] {"+collisionComponent"};
+	private static String[] messageFilter = new String[] {};
+	private static String[] componentFilter = new String[] {};
 
 	public CollisionSystem() {
 		super("collisionSystem", messageFilter, componentFilter);
@@ -27,21 +27,26 @@ public class CollisionSystem extends ECSSystem {
 
 	@Override
 	protected void updateI(List<ECSEvent> events) {
-		for(ECSEvent event : events) {
-			String[] data = event.getData().split("\\|");
-			float x = Float.parseFloat(data[0]);
-			float y = Float.parseFloat(data[1]);
-			float z = Float.parseFloat(data[2]);
-			
-			ECSEntity entity = ECSStorage.getEntity(event.getEntity());
-			Vec3 position = (Vec3) entity.getField("position");
-			
-			Vec3 newMovement = move(new Vec3(x,y,z), (Vec3) entity.getField("hitbox"), position);
-			event.setData(newMovement.getX() + "|" + newMovement.getY() + "|" + newMovement.getZ());
-		}
+		
 	}
 	
-	public Vec3 move(Vec3 direction, Vec3 eSpace, Vec3 inPos) {
+    @Override
+	protected void updateO() {
+    	List<ECSEntity>entities = ECSStorage.getEntities();
+		ECSEntity[] e = entities.toArray(new ECSEntity[0]);
+		for(ECSEntity entity : e) {
+			if(entity.containsComponent("collisionComponent")) {
+				Vec3 position = (Vec3) entity.getField("position");
+				Vec3 velocity = (Vec3) entity.getField("velocity");
+				Vec3 hitbox = (Vec3) entity.getField("hitbox");
+				
+				Vec3 newVelocity = move(velocity, hitbox, position);
+				entity.setField("velocity", newVelocity);
+			}
+		}
+	}
+    
+    public Vec3 move(Vec3 direction, Vec3 eSpace, Vec3 inPos) {
         CollisionPacket packet = new CollisionPacket();
         packet.R3Pos = inPos;
         packet.R3Velocity = direction;
@@ -104,7 +109,7 @@ public class CollisionSystem extends ECSSystem {
                 }
             } else {
                 // do NOT go up a slope higher than 72 degrees
-                System.out.println(dot);
+                //System.out.println(dot);
                 if(dot > 0.8) {
                     break;
                     // just a guess
@@ -134,11 +139,6 @@ public class CollisionSystem extends ECSSystem {
         packet.velocity = packet.R3Velocity.div(packet.eSpace);
         packet.nVelocity = packet.velocity.normalize();
     }
-	
-    @Override
-	protected void updateO() {
-		
-	}
 	
     @Override
 	protected void init() {

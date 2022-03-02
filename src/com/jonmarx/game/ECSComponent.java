@@ -2,6 +2,8 @@ package com.jonmarx.game;
 
 import java.util.Map;
 
+import org.json.JSONObject;
+
 /**
  * 
  * @author Jon
@@ -46,4 +48,7 @@ public abstract class ECSComponent implements Cloneable {
 	
 	public abstract Object getField(String field);
 	protected abstract void setFieldi(String field, Object value);
+	
+	public abstract JSONObject convertToJSON();
+	public abstract ECSComponent parseJSON(JSONObject obj);
 }

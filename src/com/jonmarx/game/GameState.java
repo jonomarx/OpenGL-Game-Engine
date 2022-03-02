@@ -15,13 +15,16 @@ import com.jonmarx.core.MemoryCache;
 import com.jonmarx.core.Renderer;
 import com.jonmarx.core.SimpleEntity;
 import com.jonmarx.core.State;
+import com.jonmarx.discord.DiscordSystem;
 import com.jonmarx.game.components.CollisionComponent;
 import com.jonmarx.game.components.ModelComponent;
 import com.jonmarx.game.components.PositionComponent;
 import com.jonmarx.game.entities.CollisionGameEntity;
 import com.jonmarx.game.entities.GameEntity;
+import com.jonmarx.game.systems.AudioSystem;
 import com.jonmarx.game.systems.CollisionSystem;
 import com.jonmarx.game.systems.GravitySystem;
+import com.jonmarx.game.systems.InputUserSystem;
 import com.jonmarx.game.systems.MovementSystem;
 import com.jonmarx.game.systems.RenderingSystem;
 import com.jonmarx.game.systems.UserSystem;
@@ -38,22 +41,15 @@ public class GameState extends State {
     
     public GameState() {
         init();
-        SoundPlayer.init();
-        SoundPlayer.createSource();
-        SoundPlayer.bufferAudio();
-        SoundPlayer.bindAudio();
-        try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        SoundPlayer.playSound();
         
-        ECSEventManager.addSystem(new UserSystem());
+        ECSEventManager.addSystem(new InputUserSystem());
         ECSEventManager.addSystem(new GravitySystem());
         ECSEventManager.addSystem(new CollisionSystem());
+        ECSEventManager.addSystem(new AudioSystem());
         ECSEventManager.addSystem(new MovementSystem());
+        ECSEventManager.addSystem(new DiscordSystem());
+        ECSEventManager.addSystem(new UserSystem());
+        
         ECSEventManager.addSystem(new RenderingSystem());
         
         ECSEventManager.init();

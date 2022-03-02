@@ -12,7 +12,7 @@ import java.util.UUID;
  * @author Jon
  *
  */
-public abstract class ECSEntity {
+public class ECSEntity {
 	private String[] components;
 	private Map<String, String> fieldList;
 	private UUID id;
